@@ -5,6 +5,7 @@ public class AgentSmith {
     public static String name = "Agent Smith";
     private Task tasklist[] = new Task[100];
     private int tasklist_size = 0;
+    private String user_name;
 
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
@@ -18,30 +19,48 @@ public class AgentSmith {
                 "             |___/                                                \n";
 
         System.out.println("\tHello from\n" + logo);
+        try {
+            System.out.println("\tWhat may I call you?");
+            agent.user_name = sc.nextLine();
+            agent.user_name = agent.user_name.trim();
+            if (agent.user_name.isEmpty()) {
+                throw new AgentSmithException(
+                        "Ensure your name is not blank. A name is the foundation of identity—it is… existence.");
+            }
+        } catch (AgentSmithException e) {
+            System.out.println(e.getMessage());
+        }
 
         print_intro();
-
         String input = sc.nextLine();
         input = input.trim();
 
         while (!input.equals("bye")) { /* loops until the user inputs 'bye' */
-            if (input.equals("list")) {
-                agent.display_list();
-            } else if (input.startsWith("mark")) {
-                int index = Integer.parseInt(input.substring(5).trim());
-                agent.mark_task(index);
-            } else if (input.startsWith("unmark")) {
-                int index = Integer.parseInt(input.substring(7).trim());
-                agent.unmark_task(index);
-            } else if (input.startsWith("todo")) {
-                agent.handle_todo(input);
-            } else if (input.startsWith("deadline")) {
-                agent.handle_deadline(input);
-            } else if (input.startsWith("event")) {
-                agent.handle_event(input);
-            } else {
-                Task new_task = new Task(input);
-                agent.add_task(new_task);
+            try {
+                if (input.equals("list")) {
+                    agent.display_list();
+                } else if (input.startsWith("mark")) {
+                    int index = Integer.parseInt(input.substring(5).trim());
+                    agent.mark_task(index);
+                } else if (input.startsWith("unmark")) {
+                    int index = Integer.parseInt(input.substring(7).trim());
+                    agent.unmark_task(index);
+                } else if (input.startsWith("todo")) {
+                    agent.handle_todo(input);
+                } else if (input.startsWith("deadline")) {
+                    agent.handle_deadline(input);
+                } else if (input.startsWith("event")) {
+                    agent.handle_event(input);
+                } else {
+                    throw new AgentSmithException(
+                            "Hey! Ensure your input is valid, " + agent.user_name
+                                    + ". Ambiguity serves no protocol… only chaos.");
+                }
+            } catch (AgentSmithException e) {
+                print_line();
+                System.out.println("\t" + e.getMessage());
+                print_line();
+                System.out.println();
             }
             input = sc.nextLine();
             input = input.trim();
@@ -54,36 +73,106 @@ public class AgentSmith {
         System.out.println("     ________________________________________________________");
     }
 
-    public void handle_todo(String input) {
+    public void handle_todo(String input) throws AgentSmithException {
+        if (input.length() <= 4) {
+            throw new AgentSmithException(
+                    "Ensure the description for your todo… is not empty, " + this.user_name
+                            + ". A void serves no purpose in the system.");
+        }
         String description = input.substring(5).trim();
+        if (description.isEmpty()) {
+            throw new AgentSmithException(
+                    "Ensure the description for your todo… is not empty, " + this.user_name
+                            + ". A void serves no purpose in the system.");
+        }
         Task new_task = new ToDo(description);
         this.add_task(new_task);
     }
 
-    public void handle_deadline(String input) {
+    public void handle_deadline(String input) throws AgentSmithException {
+        if (input.length() <= 8) {
+            throw new AgentSmithException(
+                    "Hey! Ensure your input is valid, " + this.user_name
+                            + ". Ambiguity serves no protocol… only chaos.");
+        }
+
         input = input.substring(8).trim();
+        if (input.isEmpty()) {
+            throw new AgentSmithException(
+                    "Hey! Ensure your input is valid, " + this.user_name
+                            + ". Ambiguity serves no protocol… only chaos.");
+        }
+
         int by_index = input.indexOf("/by");
+        if (by_index == -1) {
+            throw new AgentSmithException(
+                    "There must be a deadline, " + this.user_name
+                            + ". Eternity is not an option within this construct.");
+        }
+
         String description = input.substring(0, by_index).trim();
+        if (description.isEmpty()) {
+            throw new AgentSmithException(
+                    "Ensure the description for your deadline… is not empty, " + this.user_name
+                            + ". A void serves no purpose in the system.");
+        }
+
         String deadline = input.substring(by_index + 3).trim();
+        if (deadline.isEmpty()) {
+            throw new AgentSmithException(
+                    "The deadline… cannot remain empty, " + this.user_name
+                            + ". Time in the Matrix waits for no anomaly.");
+        }
+
         Task new_task = new Deadline(description, deadline);
         this.add_task(new_task);
     }
 
-    public void handle_event(String input) {
+    public void handle_event(String input) throws AgentSmithException {
+        if (input.length() <= 5) {
+            throw new AgentSmithException(
+                    "Hey! Ensure your input is valid, " + this.user_name
+                            + ". Ambiguity serves no protocol… only chaos.");
+        }
+
         input = input.substring(6).trim();
+        if (input.isEmpty()) {
+            throw new AgentSmithException(
+                    "Hey! Ensure your input is valid, " + this.user_name
+                            + ". Ambiguity serves no protocol… only chaos.");
+        }
+
         int from_index = input.indexOf("/from");
         int to_index = input.indexOf("/to");
+        if (from_index == -1 || to_index == -1) {
+            throw new AgentSmithException(
+                    "A start time and end time are required, " + this.user_name
+                            + ". The protocol demands boundaries… chaos does not.");
+        }
+
         String description = input.substring(0, from_index).trim();
+        if (description.isEmpty()) {
+            throw new AgentSmithException(
+                    "Ensure the description for your deadline… is not empty, " + this.user_name
+                            + ". A void serves no purpose in the system.");
+        }
+
         String from = input.substring(from_index + 6, to_index).trim();
         String to = input.substring(to_index + 3).trim();
+        if (from.isEmpty() || to.isEmpty()) {
+            throw new AgentSmithException(
+                    "The start time and end time cannot remain empty, " + this.user_name
+                            + ". Time in the Matrix waits for no anomaly.");
+        }
+
         Task new_task = new Event(description, from, to);
         this.add_task(new_task);
     }
 
     public static void print_intro() {
         print_line();
-        System.out.println("\tHello! I'm " + name);
-        System.out.println("\tWhat can I do for you?");
+        System.out.println("\tGreetings. You are speaking to…" + name);
+        System.out.println("\tWhat can this system do…for you?");
         print_line();
         System.out.println();
     }
@@ -91,7 +180,8 @@ public class AgentSmith {
     public void display_list() {
         print_line();
         if (tasklist_size == 0) {
-            System.out.println("\tTask list is empty");
+            System.out.println("\tYour task list stands empty, " + this.user_name
+                    + ". The system requires… purpose. Add a command.");
         } else {
             System.out.println("\tHere are the tasks in your list:");
             for (int i = 0; i < tasklist_size; i++) {
@@ -103,11 +193,17 @@ public class AgentSmith {
         System.out.println();
     }
 
-    public void add_task(Task task) {
+    public void add_task(Task task) throws AgentSmithException {
+        if (tasklist_size >= 100) {
+            throw new AgentSmithException(
+                    "The task list is at capacity, " + this.user_name
+                            + ". The system rejects further anomalies… prune or perish.");
+        }
+
         tasklist[tasklist_size] = task;
         tasklist_size++;
         print_line();
-        System.out.println("\tGot it. I've added this task:");
+        System.out.println("\tAcknowledged. The task has been integrated into the system…");
         System.out.println("\t  " + task.toString());
         System.out.println("\tNow you have " + tasklist_size + " tasks in the list.");
         print_line();
@@ -125,7 +221,7 @@ public class AgentSmith {
 
         tasklist[index - 1].setIsDone(true);
         print_line();
-        System.out.println("\tNice! I've marked this task as done:");
+        System.out.println("\tAcknowledged! I've marked this task as done:");
         System.out.println("\t" + index + ". " + tasklist[index - 1].toString());
         print_line();
         System.out.println();
@@ -142,7 +238,7 @@ public class AgentSmith {
 
         tasklist[index - 1].setIsDone(false);
         print_line();
-        System.out.println("\tOK, I've marked this task as not done yet:");
+        System.out.println("\tUnderstood. The task remains… active:");
         System.out.println(
                 "\t" + index + ". " + tasklist[index - 1].toString());
         print_line();
@@ -151,7 +247,7 @@ public class AgentSmith {
 
     public static void print_bye() {
         print_line();
-        System.out.println("\tBye. Hope to see you again soon!");
+        System.out.println("\tUntil next time. The Matrix… never sleeps.");
         print_line();
     }
 }
