@@ -45,6 +45,9 @@ public class AgentSmith {
                 } else if (input.startsWith("unmark")) {
                     int index = Integer.parseInt(input.substring(7).trim());
                     agent.unmark_task(index);
+                } else if (input.startsWith("delete")) {
+                    int index = Integer.parseInt(input.substring(7).trim());
+                    agent.delete_task(index);
                 } else if (input.startsWith("todo")) {
                     agent.handle_todo(input);
                 } else if (input.startsWith("deadline")) {
@@ -240,6 +243,23 @@ public class AgentSmith {
         System.out.println("\tUnderstood. The task remains… active:");
         System.out.println(
                 "\t" + index + ". " + tasklist.get(index - 1).toString());
+        print_line();
+        System.out.println();
+    }
+
+    public void delete_task(int index) {
+        if (index < 1 || index > tasklist.size()) { // check if the task number is valid
+            print_line();
+            System.out.println("\tInvalid task number");
+            print_line();
+            System.out.println();
+            return;
+        }
+        print_line();
+        System.out.println("\tAcknowledged. The task has been erased from the system");
+        System.out.println("\t  " + index + ". " + tasklist.get(index - 1).toString());
+        tasklist.remove(index - 1);
+        System.out.println("\tNow you have " + tasklist.size() + " tasks in the list.");
         print_line();
         System.out.println();
     }
