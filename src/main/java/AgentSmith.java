@@ -1,10 +1,10 @@
 import java.util.Scanner;
+import java.util.ArrayList;
 
 public class AgentSmith {
 
     public static String name = "Agent Smith";
-    private Task tasklist[] = new Task[100];
-    private int tasklist_size = 0;
+    private ArrayList<Task> tasklist = new ArrayList<>();
     private String user_name;
 
     public static void main(String[] args) {
@@ -179,13 +179,13 @@ public class AgentSmith {
 
     public void display_list() {
         print_line();
-        if (tasklist_size == 0) {
+        if (tasklist.size() == 0) {
             System.out.println("\tYour task list stands empty, " + this.user_name
                     + ". The system requires… purpose. Add a command.");
         } else {
             System.out.println("\tHere are the tasks in your list:");
-            for (int i = 0; i < tasklist_size; i++) {
-                Task task = tasklist[i];
+            for (int i = 0; i < tasklist.size(); i++) {
+                Task task = tasklist.get(i);
                 System.out.println("\t" + (i + 1) + ". " + task.toString());
             }
         }
@@ -194,24 +194,23 @@ public class AgentSmith {
     }
 
     public void add_task(Task task) throws AgentSmithException {
-        if (tasklist_size >= 100) {
+        if (tasklist.size() >= 100) {
             throw new AgentSmithException(
                     "The task list is at capacity, " + this.user_name
                             + ". The system rejects further anomalies… prune or perish.");
         }
 
-        tasklist[tasklist_size] = task;
-        tasklist_size++;
+        tasklist.add(task);
         print_line();
         System.out.println("\tAcknowledged. The task has been integrated into the system…");
         System.out.println("\t  " + task.toString());
-        System.out.println("\tNow you have " + tasklist_size + " tasks in the list.");
+        System.out.println("\tNow you have " + tasklist.size() + " tasks in the list.");
         print_line();
         System.out.println();
     }
 
     public void mark_task(int index) {
-        if (index < 1 || index > tasklist_size) { // check if the task number is valid
+        if (index < 1 || index > tasklist.size()) { // check if the task number is valid
             print_line();
             System.out.println("\tInvalid task number");
             print_line();
@@ -219,16 +218,16 @@ public class AgentSmith {
             return;
         }
 
-        tasklist[index - 1].setIsDone(true);
+        tasklist.get(index - 1).setIsDone(true);
         print_line();
         System.out.println("\tAcknowledged! I've marked this task as done:");
-        System.out.println("\t" + index + ". " + tasklist[index - 1].toString());
+        System.out.println("\t" + index + ". " + tasklist.get(index - 1).toString());
         print_line();
         System.out.println();
     }
 
     public void unmark_task(int index) {
-        if (index < 1 || index > tasklist_size) { // check if the task number is valid
+        if (index < 1 || index > tasklist.size()) { // check if the task number is valid
             print_line();
             System.out.println("\tInvalid task number");
             print_line();
@@ -236,11 +235,11 @@ public class AgentSmith {
             return;
         }
 
-        tasklist[index - 1].setIsDone(false);
+        tasklist.get(index - 1).setIsDone(false);
         print_line();
         System.out.println("\tUnderstood. The task remains… active:");
         System.out.println(
-                "\t" + index + ". " + tasklist[index - 1].toString());
+                "\t" + index + ". " + tasklist.get(index - 1).toString());
         print_line();
         System.out.println();
     }
