@@ -22,4 +22,8 @@ public class Task {
     public void setIsDone(boolean isDone) {
         this.isDone = isDone;
     }
+
+    public String toString() {
+        return "[" + getStatusIcon() + "] " + description;
+    }
 }
