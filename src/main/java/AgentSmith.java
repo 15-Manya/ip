@@ -1,11 +1,14 @@
 import java.util.Scanner;
 import java.util.ArrayList;
+import java.io.File;
 
 public class AgentSmith {
 
     public static String name = "Agent Smith";
     private ArrayList<Task> tasklist = new ArrayList<>();
     private String user_name;
+
+    final String FILE_PATH = "./data/tasks.txt";
 
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
@@ -30,6 +33,8 @@ public class AgentSmith {
         } catch (AgentSmithException e) {
             System.out.println(e.getMessage());
         }
+
+        agent.load_data();
 
         print_intro();
         String input = sc.nextLine();
@@ -74,6 +79,28 @@ public class AgentSmith {
 
     public static void print_line() {
         System.out.println("     ________________________________________________________");
+    }
+
+    public void load_data() {
+        print_line();
+        try {
+            File file = new File(FILE_PATH);
+            if (file.length() <= 0) {
+                System.out.println("No data found in the file.");
+                return;
+            }
+
+            if (file.exists()) {
+                Scanner sc = new Scanner(file);
+                while (sc.hasNextLine()) {
+                    String line = sc.nextLine();
+                    System.out.println(line);
+                }
+            }
+        } catch (Exception e) {
+            System.out.println("Error loading data.");
+        }
+        print_line();
     }
 
     public void handle_todo(String input) throws AgentSmithException {
