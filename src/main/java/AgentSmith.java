@@ -1,6 +1,7 @@
 import java.util.Scanner;
 import java.util.ArrayList;
 import java.io.File;
+import java.io.FileWriter;
 
 public class AgentSmith {
 
@@ -101,6 +102,16 @@ public class AgentSmith {
             System.out.println("Error loading data.");
         }
         print_line();
+    }
+
+    public void save_data(String line) {
+        try {
+            FileWriter fw = new FileWriter(FILE_PATH, true);
+            fw.write(line + System.lineSeparator());
+            fw.close();
+        } catch (Exception e) {
+            System.out.println("Error saving data: " + e.getMessage());
+        }
     }
 
     public void handle_todo(String input) throws AgentSmithException {
@@ -231,6 +242,7 @@ public class AgentSmith {
         }
 
         tasklist.add(task);
+        save_data(task.saveString());
         print_line();
         System.out.println("\tAcknowledged. The task has been integrated into the system…");
         System.out.println("\t  " + task.toString());
