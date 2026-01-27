@@ -95,6 +95,8 @@ public class AgentSmith {
                 Scanner sc = new Scanner(file);
                 while (sc.hasNextLine()) {
                     String line = sc.nextLine();
+                    Task task = lineToTask(line);
+                    tasklist.add(task);
                     System.out.println(line);
                 }
             }
@@ -102,6 +104,19 @@ public class AgentSmith {
             System.out.println("Error loading data.");
         }
         print_line();
+    }
+
+    public Task lineToTask(String line) {
+        String[] parts = line.split("\\s*\\|\\s*");
+        if (parts[0].equals("T")) {
+            return new ToDo(parts[2]);
+        } else if (parts[0].equals("D")) {
+            return new Deadline(parts[2], parts[3]);
+        } else if (parts[0].equals("E")) {
+            String[] fromTo = parts[3].split("-");
+            return new Event(parts[2], fromTo[0], fromTo[1]);
+        }
+        return null;
     }
 
     public void save_data(String line) {
