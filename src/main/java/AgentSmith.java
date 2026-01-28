@@ -10,6 +10,7 @@ public class AgentSmith {
     private String user_name;
 
     final String FILE_PATH = "./data/tasks.txt";
+    final String FOLDER_PATH = "./data";
 
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
@@ -88,6 +89,10 @@ public class AgentSmith {
             File file = new File(FILE_PATH);
             if (!file.exists()) {
                 throw new AgentSmithException("The task list file does not exist.");
+            }
+
+            if (!new File(FOLDER_PATH).exists()) {
+                throw new AgentSmithException("The data folder does not exist.");
             }
 
             if (file.length() <= 0) {
