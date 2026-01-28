@@ -3,10 +3,46 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.io.FileWriter;
 import java.util.Scanner;
+import java.util.ArrayList;
 
 public class Storage {
     final String FILE_PATH = "./data/tasks.txt";
     final String FOLDER_PATH = "./data";
+
+    private final String filePath;
+
+    public Storage(String filePath) {
+        this.filePath = filePath;
+    }
+
+    public ArrayList<Task> load() throws AgentSmithException {
+        ArrayList<Task> tasks = new ArrayList<>();
+        try {
+            File file = new File(FILE_PATH);
+            if (!file.exists()) {
+                throw new AgentSmithException("The task list file does not exist.");
+            }
+            if (!new File(FOLDER_PATH).exists()) {
+                throw new AgentSmithException("The data folder does not exist.");
+            }
+            if (file.length() <= 0) {
+                System.out.println("The task list is empty.");
+                return tasks;
+            }
+            if (file.exists()) {
+                Scanner sc = new Scanner(file);
+                while (sc.hasNextLine()) {
+                    String line = sc.nextLine();
+                    Task task = lineToTask(line);
+                    tasks.add(task);
+                }
+            }
+            return tasks;
+        } catch (Exception e) {
+            System.out.println("Error loading data.");
+        }
+        return tasks;
+    }
 
     public void load_data(TaskList tasklist) {
         try {

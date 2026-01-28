@@ -11,46 +11,44 @@ public class AgentSmith {
     Ui ui;
     Storage storage;
 
-    public AgentSmith() {
-        this.tasklist = new TaskList();
+    public AgentSmith(String filePath) {
         this.ui = new Ui();
-        this.storage = new Storage();
+        this.storage = new Storage(filePath);
+        try {
+            this.tasklist = new TaskList(storage.load());
+        } catch (AgentSmithException e) {
+            ui.print_line();
+            System.out.println("\tThe task list is empty.");
+            ui.print_line();
+            this.tasklist = new TaskList();
+        }
+    }
+
+    public void run() {
+        Scanner sc = new Scanner(System.in);
+
+        ui.print_logo();
+        ui.print_intro(name);
+
+        String input = sc.nextLine().trim();
+
+        while (!input.equals("bye")) {
+            try {
+                Parser.parse(input, this);
+            } catch (AgentSmithException e) {
+                ui.print_line();
+                System.out.println("\t" + e.getMessage());
+                ui.print_line();
+                System.out.println();
+            }
+            input = sc.nextLine().trim();
+        }
+
+        ui.print_bye();
     }
 
     public static void main(String[] args) {
-
-        Scanner sc = new Scanner(System.in);
-        AgentSmith agent = new AgentSmith();
-
-        agent.ui.print_logo();
-
-        agent.load_data();
-
-        agent.ui.print_intro(name);
-
-        String input = sc.nextLine();
-        input = input.trim();
-
-        while (!input.equals("bye")) { /* loops until the user inputs 'bye' */
-            try {
-                Parser.parse(input, agent);
-            } catch (AgentSmithException e) {
-                agent.ui.print_line();
-                System.out.println("\t" + e.getMessage());
-                agent.ui.print_line();
-                System.out.println();
-            }
-            input = sc.nextLine();
-            input = input.trim();
-        }
-
-        agent.ui.print_bye();
-    }
-
-    public void load_data() {
-        ui.print_line();
-        storage.load_data(tasklist);
-        ui.print_line();
+        new AgentSmith("data/tasks.txt").run();
     }
 
     public void handle_todo(String input) throws AgentSmithException {
