@@ -2,7 +2,6 @@ import java.util.Scanner;
 import java.util.ArrayList;
 import java.io.File;
 import java.io.FileWriter;
-import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
@@ -10,8 +9,9 @@ import java.time.format.DateTimeParseException;
 public class AgentSmith {
 
     public static String name = "Agent Smith";
-    private ArrayList<Task> tasklist = new ArrayList<>();
     private String user_name;
+
+    TaskList tasklist = new TaskList();
 
     final String FILE_PATH = "./data/tasks.txt";
     final String FOLDER_PATH = "./data";
@@ -109,7 +109,7 @@ public class AgentSmith {
                 while (sc.hasNextLine()) {
                     String line = sc.nextLine();
                     Task task = lineToTask(line);
-                    tasklist.add(task);
+                    tasklist.add_task(task);
                     System.out.println(line);
                 }
             }
@@ -145,7 +145,7 @@ public class AgentSmith {
     public void save_all() {
         try {
             FileWriter fw = new FileWriter(FILE_PATH);
-            for (Task task : tasklist) {
+            for (Task task : tasklist.getAll()) {
                 fw.write(task.saveString() + System.lineSeparator());
             }
             fw.close();
@@ -284,13 +284,7 @@ public class AgentSmith {
     }
 
     public void add_task(Task task) throws AgentSmithException {
-        if (tasklist.size() >= 100) {
-            throw new AgentSmithException(
-                    "The task list is at capacity, " + this.user_name
-                            + ". The system rejects further anomalies… prune or perish.");
-        }
-
-        tasklist.add(task);
+        tasklist.add_task(task);
         save_all();
         print_line();
         System.out.println("\tAcknowledged. The task has been integrated into the system…");
@@ -300,36 +294,20 @@ public class AgentSmith {
         System.out.println();
     }
 
-    public void mark_task(int index) {
-        if (index < 1 || index > tasklist.size()) { // check if the task number is valid
-            print_line();
-            System.out.println("\tInvalid task number");
-            print_line();
-            System.out.println();
-            return;
-        }
-
-        tasklist.get(index - 1).setIsDone(true);
-        save_all();
+    public void mark_task(int index) throws AgentSmithException {
         print_line();
+        tasklist.mark_task(index);
+        save_all();
         System.out.println("\tAcknowledged! I've marked this task as done:");
         System.out.println("\t" + index + ". " + tasklist.get(index - 1).toString());
         print_line();
         System.out.println();
     }
 
-    public void unmark_task(int index) {
-        if (index < 1 || index > tasklist.size()) { // check if the task number is valid
-            print_line();
-            System.out.println("\tInvalid task number");
-            print_line();
-            System.out.println();
-            return;
-        }
-
-        tasklist.get(index - 1).setIsDone(false);
-        save_all();
+    public void unmark_task(int index) throws AgentSmithException {
         print_line();
+        tasklist.unmark_task(index);
+        save_all();
         System.out.println("\tUnderstood. The task remains… active:");
         System.out.println(
                 "\t" + index + ". " + tasklist.get(index - 1).toString());
@@ -337,7 +315,7 @@ public class AgentSmith {
         System.out.println();
     }
 
-    public void delete_task(int index) {
+    public void delete_task(int index) throws AgentSmithException {
         if (index < 1 || index > tasklist.size()) { // check if the task number is valid
             print_line();
             System.out.println("\tInvalid task number");
@@ -348,7 +326,7 @@ public class AgentSmith {
         print_line();
         System.out.println("\tAcknowledged. The task has been erased from the system");
         System.out.println("\t  " + index + ". " + tasklist.get(index - 1).toString());
-        tasklist.remove(index - 1);
+        tasklist.delete_task(index);
         save_all();
         System.out.println("\tNow you have " + tasklist.size() + " tasks in the list.");
         print_line();
