@@ -113,14 +113,20 @@ public class AgentSmith {
     // this method is used to convert the task line stored in the file to a Task
     // object
     public Task lineToTask(String line) {
-        String[] parts = line.split("\\s*\\|\\s*");
-        if (parts[0].equals("T")) {
-            return new ToDo(parts[2]);
-        } else if (parts[0].equals("D")) {
-            return new Deadline(parts[2], parts[3]);
-        } else if (parts[0].equals("E")) {
-            String[] fromTo = parts[3].split("-");
-            return new Event(parts[2], fromTo[0], fromTo[1]);
+        try {
+            String[] parts = line.split("\\s*\\|\\s*");
+            if (parts[0].equals("T")) {
+                return new ToDo(parts[2]);
+            } else if (parts[0].equals("D")) {
+                return new Deadline(parts[2], parts[3]);
+            } else if (parts[0].equals("E")) {
+                String[] fromTo = parts[3].split("-");
+                return new Event(parts[2], fromTo[0], fromTo[1]);
+            } else {
+                throw new AgentSmithException("Invalid task type: " + parts[0]);
+            }
+        } catch (AgentSmithException e) {
+            System.out.println(e.getMessage());
         }
         return null;
     }
