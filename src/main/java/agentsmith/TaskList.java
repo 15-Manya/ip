@@ -1,3 +1,5 @@
+package agentsmith;
+
 import java.util.ArrayList;
 
 //used to manage the task list

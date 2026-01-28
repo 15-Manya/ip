@@ -1,3 +1,5 @@
+package agentsmith;
+
 public class Event extends Task {
     protected String from, to;
     protected boolean isDone;

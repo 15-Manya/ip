@@ -1,3 +1,5 @@
+package agentsmith;
+
 public class Parser {
     public static void parse(String input, AgentSmith agent) throws AgentSmithException {
         if (input.equals("list")) {

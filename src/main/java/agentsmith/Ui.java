@@ -1,3 +1,5 @@
+package agentsmith;
+
 public class Ui {
 
     public void print_logo() {

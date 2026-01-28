@@ -1,3 +1,5 @@
+package agentsmith;
+
 import java.util.Scanner;
 import java.time.format.DateTimeFormatter;
 import java.time.LocalDateTime;
