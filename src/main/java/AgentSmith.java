@@ -2,6 +2,10 @@ import java.util.Scanner;
 import java.util.ArrayList;
 import java.io.File;
 import java.io.FileWriter;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeParseException;
 
 public class AgentSmith {
 
@@ -123,7 +127,9 @@ public class AgentSmith {
             if (parts[0].equals("T")) {
                 return new ToDo(parts[2]);
             } else if (parts[0].equals("D")) {
-                return new Deadline(parts[2], parts[3]);
+                DateTimeFormatter format = DateTimeFormatter.ofPattern("d MMMM yyyy, h:mma");
+                LocalDateTime deadline = LocalDateTime.parse(parts[3], format);
+                return new Deadline(parts[2], deadline);
             } else if (parts[0].equals("E")) {
                 String[] fromTo = parts[3].split("-");
                 return new Event(parts[2], fromTo[0], fromTo[1]);
@@ -199,8 +205,17 @@ public class AgentSmith {
                             + ". Time in the Matrix waits for no anomaly.");
         }
 
-        Task new_task = new Deadline(description, deadline);
-        this.add_task(new_task);
+        try {
+            DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-dd HHmm");
+            LocalDateTime deadlineDateTime = LocalDateTime.parse(deadline, format);
+
+            Task new_task = new Deadline(description, deadlineDateTime);
+            this.add_task(new_task);
+        } catch (DateTimeParseException e) {
+            throw new AgentSmithException(
+                    "Invalid deadline format, " + this.user_name
+                            + ". Please use: yyyy-MM-dd HHmm (e.g. 2026-01-30 1630).");
+        }
     }
 
     public void handle_event(String input) throws AgentSmithException {
