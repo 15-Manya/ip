@@ -86,8 +86,12 @@ public class AgentSmith {
         print_line();
         try {
             File file = new File(FILE_PATH);
+            if (!file.exists()) {
+                throw new AgentSmithException("The task list file does not exist.");
+            }
+
             if (file.length() <= 0) {
-                System.out.println("No data found in the file.");
+                System.out.println("The task list is empty.");
                 return;
             }
 
@@ -106,6 +110,8 @@ public class AgentSmith {
         print_line();
     }
 
+    // this method is used to convert the task line stored in the file to a Task
+    // object
     public Task lineToTask(String line) {
         String[] parts = line.split("\\s*\\|\\s*");
         if (parts[0].equals("T")) {
@@ -119,10 +125,12 @@ public class AgentSmith {
         return null;
     }
 
-    public void save_data(String line) {
+    public void save_all() {
         try {
-            FileWriter fw = new FileWriter(FILE_PATH, true);
-            fw.write(line + System.lineSeparator());
+            FileWriter fw = new FileWriter(FILE_PATH);
+            for (Task task : tasklist) {
+                fw.write(task.saveString() + System.lineSeparator());
+            }
             fw.close();
         } catch (Exception e) {
             System.out.println("Error saving data: " + e.getMessage());
@@ -257,7 +265,7 @@ public class AgentSmith {
         }
 
         tasklist.add(task);
-        save_data(task.saveString());
+        save_all();
         print_line();
         System.out.println("\tAcknowledged. The task has been integrated into the system…");
         System.out.println("\t  " + task.toString());
@@ -276,6 +284,7 @@ public class AgentSmith {
         }
 
         tasklist.get(index - 1).setIsDone(true);
+        save_all();
         print_line();
         System.out.println("\tAcknowledged! I've marked this task as done:");
         System.out.println("\t" + index + ". " + tasklist.get(index - 1).toString());
@@ -293,6 +302,7 @@ public class AgentSmith {
         }
 
         tasklist.get(index - 1).setIsDone(false);
+        save_all();
         print_line();
         System.out.println("\tUnderstood. The task remains… active:");
         System.out.println(
@@ -313,6 +323,7 @@ public class AgentSmith {
         System.out.println("\tAcknowledged. The task has been erased from the system");
         System.out.println("\t  " + index + ". " + tasklist.get(index - 1).toString());
         tasklist.remove(index - 1);
+        save_all();
         System.out.println("\tNow you have " + tasklist.size() + " tasks in the list.");
         print_line();
         System.out.println();
