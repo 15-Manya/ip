@@ -1,0 +1,3 @@
+T | 0 | call Papa
+E | 1 | team meeting | 4-6pm
+T | 0 | borrow book

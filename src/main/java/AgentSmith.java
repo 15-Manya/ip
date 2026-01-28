@@ -1,11 +1,16 @@
 import java.util.Scanner;
 import java.util.ArrayList;
+import java.io.File;
+import java.io.FileWriter;
 
 public class AgentSmith {
 
     public static String name = "Agent Smith";
     private ArrayList<Task> tasklist = new ArrayList<>();
     private String user_name;
+
+    final String FILE_PATH = "./data/tasks.txt";
+    final String FOLDER_PATH = "./data";
 
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
@@ -30,6 +35,8 @@ public class AgentSmith {
         } catch (AgentSmithException e) {
             System.out.println(e.getMessage());
         }
+
+        agent.load_data();
 
         print_intro();
         String input = sc.nextLine();
@@ -74,6 +81,71 @@ public class AgentSmith {
 
     public static void print_line() {
         System.out.println("     ________________________________________________________");
+    }
+
+    public void load_data() {
+        print_line();
+        try {
+            File file = new File(FILE_PATH);
+            if (!file.exists()) {
+                throw new AgentSmithException("The task list file does not exist.");
+            }
+
+            if (!new File(FOLDER_PATH).exists()) {
+                throw new AgentSmithException("The data folder does not exist.");
+            }
+
+            if (file.length() <= 0) {
+                System.out.println("The task list is empty.");
+                return;
+            }
+
+            if (file.exists()) {
+                Scanner sc = new Scanner(file);
+                while (sc.hasNextLine()) {
+                    String line = sc.nextLine();
+                    Task task = lineToTask(line);
+                    tasklist.add(task);
+                    System.out.println(line);
+                }
+            }
+        } catch (Exception e) {
+            System.out.println("Error loading data.");
+        }
+        print_line();
+    }
+
+    // this method is used to convert the task line stored in the file to a Task
+    // object
+    public Task lineToTask(String line) {
+        try {
+            String[] parts = line.split("\\s*\\|\\s*");
+            if (parts[0].equals("T")) {
+                return new ToDo(parts[2]);
+            } else if (parts[0].equals("D")) {
+                return new Deadline(parts[2], parts[3]);
+            } else if (parts[0].equals("E")) {
+                String[] fromTo = parts[3].split("-");
+                return new Event(parts[2], fromTo[0], fromTo[1]);
+            } else {
+                throw new AgentSmithException("Invalid task type: " + parts[0]);
+            }
+        } catch (AgentSmithException e) {
+            System.out.println(e.getMessage());
+        }
+        return null;
+    }
+
+    public void save_all() {
+        try {
+            FileWriter fw = new FileWriter(FILE_PATH);
+            for (Task task : tasklist) {
+                fw.write(task.saveString() + System.lineSeparator());
+            }
+            fw.close();
+        } catch (Exception e) {
+            System.out.println("Error saving data: " + e.getMessage());
+        }
     }
 
     public void handle_todo(String input) throws AgentSmithException {
@@ -204,6 +276,7 @@ public class AgentSmith {
         }
 
         tasklist.add(task);
+        save_all();
         print_line();
         System.out.println("\tAcknowledged. The task has been integrated into the system…");
         System.out.println("\t  " + task.toString());
@@ -222,6 +295,7 @@ public class AgentSmith {
         }
 
         tasklist.get(index - 1).setIsDone(true);
+        save_all();
         print_line();
         System.out.println("\tAcknowledged! I've marked this task as done:");
         System.out.println("\t" + index + ". " + tasklist.get(index - 1).toString());
@@ -239,6 +313,7 @@ public class AgentSmith {
         }
 
         tasklist.get(index - 1).setIsDone(false);
+        save_all();
         print_line();
         System.out.println("\tUnderstood. The task remains… active:");
         System.out.println(
@@ -259,6 +334,7 @@ public class AgentSmith {
         System.out.println("\tAcknowledged. The task has been erased from the system");
         System.out.println("\t  " + index + ". " + tasklist.get(index - 1).toString());
         tasklist.remove(index - 1);
+        save_all();
         System.out.println("\tNow you have " + tasklist.size() + " tasks in the list.");
         print_line();
         System.out.println();
