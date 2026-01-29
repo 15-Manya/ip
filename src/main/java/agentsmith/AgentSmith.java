@@ -5,6 +5,9 @@ import java.time.format.DateTimeFormatter;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
 
+/**
+ * Main chatbot class that coordinates the UI, storage, and task list.
+ */
 public class AgentSmith {
 
     public static String name = "Agent Smith";
@@ -13,6 +16,11 @@ public class AgentSmith {
     Ui ui;
     Storage storage;
 
+    /**
+     * Creates an {@code AgentSmith} instance using the given save file path.
+     *
+     * @param filePath path to the save file.
+     */
     public AgentSmith(String filePath) {
         this.ui = new Ui();
         this.storage = new Storage(filePath);
@@ -26,6 +34,9 @@ public class AgentSmith {
         }
     }
 
+    /**
+     * Runs the main interaction loop until the user enters {@code bye}.
+     */
     public void run() {
         Scanner sc = new Scanner(System.in);
 
@@ -49,10 +60,21 @@ public class AgentSmith {
         ui.print_bye();
     }
 
+    /**
+     * Entry point of the program.
+     *
+     * @param args command-line arguments (not used).
+     */
     public static void main(String[] args) {
         new AgentSmith("data/tasks.txt").run();
     }
 
+    /**
+     * Handles the creation of a todo task from the given input.
+     *
+     * @param input raw user command string.
+     * @throws AgentSmithException if the description is missing or empty.
+     */
     public void handle_todo(String input) throws AgentSmithException {
         if (input.length() <= 4) {
             throw new AgentSmithException(
@@ -67,6 +89,12 @@ public class AgentSmith {
         this.add_task(new_task);
     }
 
+    /**
+     * Handles the creation of a deadline task from the given input.
+     *
+     * @param input raw user command string.
+     * @throws AgentSmithException if the description or deadline is invalid.
+     */
     public void handle_deadline(String input) throws AgentSmithException {
         if (input.length() <= 8) {
             throw new AgentSmithException(
@@ -109,6 +137,12 @@ public class AgentSmith {
         }
     }
 
+    /**
+     * Handles the creation of an event task from the given input.
+     *
+     * @param input raw user command string.
+     * @throws AgentSmithException if the description or time range is invalid.
+     */
     public void handle_event(String input) throws AgentSmithException {
         if (input.length() <= 5) {
             throw new AgentSmithException(
@@ -145,6 +179,9 @@ public class AgentSmith {
         this.add_task(new_task);
     }
 
+    /**
+     * Displays all tasks in the current task list.
+     */
     public void display_list() {
         ui.print_line();
         if (tasklist.size() == 0) {
@@ -160,6 +197,12 @@ public class AgentSmith {
         System.out.println();
     }
 
+    /**
+     * Adds the given task to the list and persists the updated list.
+     *
+     * @param task task to add.
+     * @throws AgentSmithException if the list is at capacity.
+     */
     public void add_task(Task task) throws AgentSmithException {
         tasklist.add_task(task);
         storage.save_all(tasklist);
@@ -171,6 +214,12 @@ public class AgentSmith {
         System.out.println();
     }
 
+    /**
+     * Marks the task at the given 1-based index as done and saves the list.
+     *
+     * @param index 1-based index of the task to mark.
+     * @throws AgentSmithException if the index is invalid.
+     */
     public void mark_task(int index) throws AgentSmithException {
         ui.print_line();
         tasklist.mark_task(index);
@@ -181,6 +230,12 @@ public class AgentSmith {
         System.out.println();
     }
 
+    /**
+     * Marks the task at the given 1-based index as not done and saves the list.
+     *
+     * @param index 1-based index of the task to unmark.
+     * @throws AgentSmithException if the index is invalid.
+     */
     public void unmark_task(int index) throws AgentSmithException {
         ui.print_line();
         tasklist.unmark_task(index);
@@ -192,6 +247,12 @@ public class AgentSmith {
         System.out.println();
     }
 
+    /**
+     * Deletes the task at the given 1-based index and saves the list.
+     *
+     * @param index 1-based index of the task to delete.
+     * @throws AgentSmithException if the index is invalid.
+     */
     public void delete_task(int index) throws AgentSmithException {
         ui.print_line();
         System.out.println("\tAcknowledged. The task has been erased from the system");

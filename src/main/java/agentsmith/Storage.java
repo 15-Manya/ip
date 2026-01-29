@@ -17,6 +17,12 @@ public class Storage {
         this.filePath = filePath;
     }
 
+    /**
+     * Loads tasks from the save file and returns them as a list.
+     *
+     * @return list of tasks loaded from disk (empty if file is missing or empty)
+     * @throws AgentSmithException if there is a problem reading the file
+     */
     public ArrayList<Task> load() throws AgentSmithException {
         ArrayList<Task> tasks = new ArrayList<>();
         try {
@@ -76,8 +82,12 @@ public class Storage {
         }
     }
 
-    // this method is used to convert the task line stored in the file to a Task
-    // object
+    /**
+     * Converts a single line from the save file into a {@link Task} instance.
+     *
+     * @param line line from the save file
+     * @return reconstructed task, or {@code null} if the line is invalid
+     */
     public Task lineToTask(String line) {
         try {
             String[] parts = line.split("\\s*\\|\\s*");
@@ -99,6 +109,12 @@ public class Storage {
         return null;
     }
 
+    /**
+     * Saves all tasks in the given {@link TaskList} to the save file,
+     * overwriting any existing contents.
+     *
+     * @param tasklist task list to persist
+     */
     public void save_all(TaskList tasklist) {
         try {
             FileWriter fw = new FileWriter(FILE_PATH);
