@@ -113,4 +113,15 @@ public class TaskList {
         }
         tasks.remove(index - 1);
     }
+
+    public void find(String keyword) throws AgentSmithException {
+        if (keyword.isEmpty()) {
+            throw new AgentSmithException("The keyword is empty.");
+        }
+        for (Task task : tasks) {
+            if (task.toString().contains(keyword)) {
+                System.out.println(task.toString());
+            }
+        }
+    }
 }

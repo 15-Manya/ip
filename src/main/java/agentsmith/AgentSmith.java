@@ -247,6 +247,13 @@ public class AgentSmith {
         System.out.println();
     }
 
+    public void find(String keyword) throws AgentSmithException {
+        ui.printLine();
+        taskList.find(keyword);
+        ui.printLine();
+        System.out.println();
+    }
+
     /**
      * Deletes the task at the given 1-based index and saves the list.
      *
