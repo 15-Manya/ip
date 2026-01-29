@@ -24,8 +24,13 @@ public class AgentSmith {
     public AgentSmith(String filePath) {
         this.ui = new Ui();
         this.storage = new Storage(filePath);
+
+        ui.printLogo();
+        ui.printIntro(name);
+
         try {
             this.taskList = new TaskList(storage.load());
+            ui.printLine();
         } catch (AgentSmithException e) {
             ui.printLine();
             System.out.println("\tThe task list is empty.");
@@ -39,9 +44,6 @@ public class AgentSmith {
      */
     public void run() {
         Scanner sc = new Scanner(System.in);
-
-        ui.printLogo();
-        ui.printIntro(name);
 
         String input = sc.nextLine().trim();
 

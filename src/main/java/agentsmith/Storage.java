@@ -46,6 +46,7 @@ public class Storage {
                     String line = sc.nextLine();
                     Task task = lineToTask(line);
                     tasks.add(task);
+                    System.out.println(line);
                 }
             }
             return tasks;
@@ -72,6 +73,7 @@ public class Storage {
             }
 
             if (file.exists()) {
+                System.out.println("Loading data...");
                 Scanner sc = new Scanner(file);
                 while (sc.hasNextLine()) {
                     String line = sc.nextLine();
