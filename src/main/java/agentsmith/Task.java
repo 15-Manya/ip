@@ -1,5 +1,8 @@
 package agentsmith;
 
+/**
+ * Represents a single task with a description and completion status.
+ */
 public class Task {
     protected String description;
     protected boolean isDone;
@@ -17,7 +20,7 @@ public class Task {
         return description;
     }
 
-    public boolean getIsDone() {
+    public boolean isDone() {
         return isDone;
     }
 
@@ -30,6 +33,6 @@ public class Task {
     }
 
     public String saveString() {
-        return "| " + (getIsDone() ? 1 : 0) + " | " + getDescription();
+        return "| " + (isDone() ? 1 : 0) + " | " + getDescription();
     }
 }

@@ -17,8 +17,8 @@ public class Deadline extends Task {
     }
 
     public String getDeadlineString() {
-        DateTimeFormatter deadline = DateTimeFormatter.ofPattern("d MMMM yyyy, h:mma");
-        return deadline.format(this.deadline);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d MMMM yyyy, h:mma");
+        return formatter.format(this.deadline);
     }
 
     @Override

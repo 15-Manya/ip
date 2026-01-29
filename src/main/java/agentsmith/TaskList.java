@@ -6,22 +6,22 @@ import java.util.ArrayList;
  * Used to manage the list of tasks and provide operations on it.
  */
 public class TaskList {
-    private ArrayList<Task> tasklist;
+    private ArrayList<Task> tasks;
 
     /**
      * Creates an empty task list.
      */
     public TaskList() {
-        this.tasklist = new ArrayList<>();
+        this.tasks = new ArrayList<>();
     }
 
     /**
      * Creates a task list backed by the given list.
      *
-     * @param tasklist underlying list of tasks.
+     * @param tasks underlying list of tasks.
      */
-    public TaskList(ArrayList<Task> tasklist) {
-        this.tasklist = tasklist;
+    public TaskList(ArrayList<Task> tasks) {
+        this.tasks = tasks;
     }
 
     /**
@@ -30,7 +30,7 @@ public class TaskList {
      * @return size of the task list.
      */
     public int size() {
-        return tasklist.size();
+        return tasks.size();
     }
 
     /**
@@ -39,7 +39,7 @@ public class TaskList {
      * @return true if empty, false otherwise.
      */
     public boolean isEmpty() {
-        return tasklist.isEmpty();
+        return tasks.isEmpty();
     }
 
     /**
@@ -49,7 +49,7 @@ public class TaskList {
      * @return task at the given index.
      */
     public Task get(int index) {
-        return tasklist.get(index);
+        return tasks.get(index);
     }
 
     /**
@@ -58,7 +58,7 @@ public class TaskList {
      * @return list of tasks.
      */
     public ArrayList<Task> getAll() {
-        return tasklist;
+        return tasks;
     }
 
     /**
@@ -67,12 +67,12 @@ public class TaskList {
      * @param task task to add.
      * @throws AgentSmithException if the list is already at capacity.
      */
-    public void add_task(Task task) throws AgentSmithException {
-        if (tasklist.size() >= 100) {
+    public void addTask(Task task) throws AgentSmithException {
+        if (tasks.size() >= 100) {
             throw new AgentSmithException(
                     "The task list is at capacity.The system rejects further anomalies… prune or perish.");
         }
-        tasklist.add(task);
+        tasks.add(task);
     }
 
     /**
@@ -81,11 +81,11 @@ public class TaskList {
      * @param index 1-based index of task to mark.
      * @throws AgentSmithException if the index is out of range.
      */
-    public void mark_task(int index) throws AgentSmithException {
-        if (index < 1 || index > tasklist.size()) {
+    public void markTask(int index) throws AgentSmithException {
+        if (index < 1 || index > tasks.size()) {
             throw new AgentSmithException("Invalid task number");
         }
-        tasklist.get(index - 1).setIsDone(true);
+        tasks.get(index - 1).setIsDone(true);
     }
 
     /**
@@ -94,11 +94,11 @@ public class TaskList {
      * @param index 1-based index of task to unmark.
      * @throws AgentSmithException if the index is out of range.
      */
-    public void unmark_task(int index) throws AgentSmithException {
-        if (index < 1 || index > tasklist.size()) {
+    public void unmarkTask(int index) throws AgentSmithException {
+        if (index < 1 || index > tasks.size()) {
             throw new AgentSmithException("Invalid task number");
         }
-        tasklist.get(index - 1).setIsDone(false);
+        tasks.get(index - 1).setIsDone(false);
     }
 
     /**
@@ -107,10 +107,10 @@ public class TaskList {
      * @param index 1-based index of task to delete.
      * @throws AgentSmithException if the index is out of range.
      */
-    public void delete_task(int index) throws AgentSmithException {
-        if (index < 1 || index > tasklist.size()) {
+    public void deleteTask(int index) throws AgentSmithException {
+        if (index < 1 || index > tasks.size()) {
             throw new AgentSmithException("Invalid task number");
         }
-        tasklist.remove(index - 1);
+        tasks.remove(index - 1);
     }
 }

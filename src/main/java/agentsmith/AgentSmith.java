@@ -12,7 +12,7 @@ public class AgentSmith {
 
     public static String name = "Agent Smith";
 
-    TaskList tasklist;
+    TaskList taskList;
     Ui ui;
     Storage storage;
 
@@ -25,12 +25,12 @@ public class AgentSmith {
         this.ui = new Ui();
         this.storage = new Storage(filePath);
         try {
-            this.tasklist = new TaskList(storage.load());
+            this.taskList = new TaskList(storage.load());
         } catch (AgentSmithException e) {
-            ui.print_line();
+            ui.printLine();
             System.out.println("\tThe task list is empty.");
-            ui.print_line();
-            this.tasklist = new TaskList();
+            ui.printLine();
+            this.taskList = new TaskList();
         }
     }
 
@@ -40,8 +40,8 @@ public class AgentSmith {
     public void run() {
         Scanner sc = new Scanner(System.in);
 
-        ui.print_logo();
-        ui.print_intro(name);
+        ui.printLogo();
+        ui.printIntro(name);
 
         String input = sc.nextLine().trim();
 
@@ -49,15 +49,15 @@ public class AgentSmith {
             try {
                 Parser.parse(input, this);
             } catch (AgentSmithException e) {
-                ui.print_line();
+                ui.printLine();
                 System.out.println("\t" + e.getMessage());
-                ui.print_line();
+                ui.printLine();
                 System.out.println();
             }
             input = sc.nextLine().trim();
         }
 
-        ui.print_bye();
+        ui.printBye();
     }
 
     /**
@@ -75,7 +75,7 @@ public class AgentSmith {
      * @param input raw user command string.
      * @throws AgentSmithException if the description is missing or empty.
      */
-    public void handle_todo(String input) throws AgentSmithException {
+    public void handleTodo(String input) throws AgentSmithException {
         if (input.length() <= 4) {
             throw new AgentSmithException(
                     "Ensure the description for your todo… is not empty. A void serves no purpose in the system.");
@@ -85,8 +85,8 @@ public class AgentSmith {
             throw new AgentSmithException(
                     "Ensure the description for your todo… is not empty. A void serves no purpose in the system.");
         }
-        Task new_task = new ToDo(description);
-        this.add_task(new_task);
+        Task newTask = new ToDo(description);
+        this.addTask(newTask);
     }
 
     /**
@@ -95,7 +95,7 @@ public class AgentSmith {
      * @param input raw user command string.
      * @throws AgentSmithException if the description or deadline is invalid.
      */
-    public void handle_deadline(String input) throws AgentSmithException {
+    public void handleDeadline(String input) throws AgentSmithException {
         if (input.length() <= 8) {
             throw new AgentSmithException(
                     "Hey! Ensure your input is valid. Ambiguity serves no protocol… only chaos.");
@@ -107,19 +107,19 @@ public class AgentSmith {
                     "Hey! Ensure your input is valid. Ambiguity serves no protocol… only chaos.");
         }
 
-        int by_index = input.indexOf("/by");
-        if (by_index == -1) {
+        int byIndex = input.indexOf("/by");
+        if (byIndex == -1) {
             throw new AgentSmithException(
                     "There must be a deadline. Eternity is not an option within this construct.");
         }
 
-        String description = input.substring(0, by_index).trim();
+        String description = input.substring(0, byIndex).trim();
         if (description.isEmpty()) {
             throw new AgentSmithException(
                     "Ensure the description for your deadline… is not empty. A void serves no purpose in the system.");
         }
 
-        String deadline = input.substring(by_index + 3).trim();
+        String deadline = input.substring(byIndex + 3).trim();
         if (deadline.isEmpty()) {
             throw new AgentSmithException(
                     "The deadline… cannot remain empty. Time in the Matrix waits for no anomaly.");
@@ -129,8 +129,8 @@ public class AgentSmith {
             DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-dd HHmm");
             LocalDateTime deadlineDateTime = LocalDateTime.parse(deadline, format);
 
-            Task new_task = new Deadline(description, deadlineDateTime);
-            this.add_task(new_task);
+            Task newTask = new Deadline(description, deadlineDateTime);
+            this.addTask(newTask);
         } catch (DateTimeParseException e) {
             throw new AgentSmithException(
                     "Invalid deadline format. Please use: yyyy-MM-dd HHmm (e.g. 2026-01-30 1630).");
@@ -143,7 +143,7 @@ public class AgentSmith {
      * @param input raw user command string.
      * @throws AgentSmithException if the description or time range is invalid.
      */
-    public void handle_event(String input) throws AgentSmithException {
+    public void handleEvent(String input) throws AgentSmithException {
         if (input.length() <= 5) {
             throw new AgentSmithException(
                     "Hey! Ensure your input is valid. Ambiguity serves no protocol… only chaos.");
@@ -155,45 +155,45 @@ public class AgentSmith {
                     "Hey! Ensure your input is valid. Ambiguity serves no protocol… only chaos.");
         }
 
-        int from_index = input.indexOf("/from");
-        int to_index = input.indexOf("/to");
-        if (from_index == -1 || to_index == -1) {
+        int fromIndex = input.indexOf("/from");
+        int toIndex = input.indexOf("/to");
+        if (fromIndex == -1 || toIndex == -1) {
             throw new AgentSmithException(
                     "A start time and end time are required. The protocol demands boundaries… chaos does not.");
         }
 
-        String description = input.substring(0, from_index).trim();
+        String description = input.substring(0, fromIndex).trim();
         if (description.isEmpty()) {
             throw new AgentSmithException(
                     "Ensure the description for your deadline… is not empty. A void serves no purpose in the system.");
         }
 
-        String from = input.substring(from_index + 6, to_index).trim();
-        String to = input.substring(to_index + 3).trim();
+        String from = input.substring(fromIndex + 6, toIndex).trim();
+        String to = input.substring(toIndex + 3).trim();
         if (from.isEmpty() || to.isEmpty()) {
             throw new AgentSmithException(
                     "The start time and end time cannot remain empty. Time in the Matrix waits for no anomaly.");
         }
 
-        Task new_task = new Event(description, from, to);
-        this.add_task(new_task);
+        Task newTask = new Event(description, from, to);
+        this.addTask(newTask);
     }
 
     /**
      * Displays all tasks in the current task list.
      */
-    public void display_list() {
-        ui.print_line();
-        if (tasklist.size() == 0) {
+    public void displayList() {
+        ui.printLine();
+        if (taskList.size() == 0) {
             System.out.println("\tYour task list stands empty. The system requires… purpose. Add a command.");
         } else {
             System.out.println("\tHere are the tasks in your list:");
-            for (int i = 0; i < tasklist.size(); i++) {
-                Task task = tasklist.get(i);
+            for (int i = 0; i < taskList.size(); i++) {
+                Task task = taskList.get(i);
                 System.out.println("\t" + (i + 1) + ". " + task.toString());
             }
         }
-        ui.print_line();
+        ui.printLine();
         System.out.println();
     }
 
@@ -203,14 +203,14 @@ public class AgentSmith {
      * @param task task to add.
      * @throws AgentSmithException if the list is at capacity.
      */
-    public void add_task(Task task) throws AgentSmithException {
-        tasklist.add_task(task);
-        storage.save_all(tasklist);
-        ui.print_line();
+    public void addTask(Task task) throws AgentSmithException {
+        taskList.addTask(task);
+        storage.saveAll(taskList);
+        ui.printLine();
         System.out.println("\tAcknowledged. The task has been integrated into the system…");
         System.out.println("\t  " + task.toString());
-        System.out.println("\tNow you have " + tasklist.size() + " tasks in the list.");
-        ui.print_line();
+        System.out.println("\tNow you have " + taskList.size() + " tasks in the list.");
+        ui.printLine();
         System.out.println();
     }
 
@@ -220,13 +220,13 @@ public class AgentSmith {
      * @param index 1-based index of the task to mark.
      * @throws AgentSmithException if the index is invalid.
      */
-    public void mark_task(int index) throws AgentSmithException {
-        ui.print_line();
-        tasklist.mark_task(index);
-        storage.save_all(tasklist);
+    public void markTask(int index) throws AgentSmithException {
+        ui.printLine();
+        taskList.markTask(index);
+        storage.saveAll(taskList);
         System.out.println("\tAcknowledged! I've marked this task as done:");
-        System.out.println("\t" + index + ". " + tasklist.get(index - 1).toString());
-        ui.print_line();
+        System.out.println("\t" + index + ". " + taskList.get(index - 1).toString());
+        ui.printLine();
         System.out.println();
     }
 
@@ -236,14 +236,14 @@ public class AgentSmith {
      * @param index 1-based index of the task to unmark.
      * @throws AgentSmithException if the index is invalid.
      */
-    public void unmark_task(int index) throws AgentSmithException {
-        ui.print_line();
-        tasklist.unmark_task(index);
-        storage.save_all(tasklist);
+    public void unmarkTask(int index) throws AgentSmithException {
+        ui.printLine();
+        taskList.unmarkTask(index);
+        storage.saveAll(taskList);
         System.out.println("\tUnderstood. The task remains… active:");
         System.out.println(
-                "\t" + index + ". " + tasklist.get(index - 1).toString());
-        ui.print_line();
+                "\t" + index + ". " + taskList.get(index - 1).toString());
+        ui.printLine();
         System.out.println();
     }
 
@@ -253,14 +253,14 @@ public class AgentSmith {
      * @param index 1-based index of the task to delete.
      * @throws AgentSmithException if the index is invalid.
      */
-    public void delete_task(int index) throws AgentSmithException {
-        ui.print_line();
+    public void deleteTask(int index) throws AgentSmithException {
+        ui.printLine();
         System.out.println("\tAcknowledged. The task has been erased from the system");
-        System.out.println("\t  " + index + ". " + tasklist.get(index - 1).toString());
-        tasklist.delete_task(index);
-        storage.save_all(tasklist);
-        System.out.println("\tNow you have " + tasklist.size() + " tasks in the list.");
-        ui.print_line();
+        System.out.println("\t  " + index + ". " + taskList.get(index - 1).toString());
+        taskList.deleteTask(index);
+        storage.saveAll(taskList);
+        System.out.println("\tNow you have " + taskList.size() + " tasks in the list.");
+        ui.printLine();
         System.out.println();
     }
 }

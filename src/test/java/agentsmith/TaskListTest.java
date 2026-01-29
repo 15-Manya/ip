@@ -14,7 +14,7 @@ public class TaskListTest {
         TaskList list = new TaskList();
         Task task = new ToDo("read book");
 
-        list.add_task(task);
+        list.addTask(task);
 
         assertEquals(1, list.size(), "Size should be 1 after adding one task");
         assertSame(task, list.get(0), "The added task should be retrievable at index 0");
@@ -25,12 +25,12 @@ public class TaskListTest {
         TaskList list = new TaskList();
         // Fill the list up to capacity
         for (int i = 0; i < 100; i++) {
-            list.add_task(new ToDo("task " + i));
+            list.addTask(new ToDo("task " + i));
         }
 
         AgentSmithException ex = assertThrows(
                 AgentSmithException.class,
-                () -> list.add_task(new ToDo("overflow task")),
+                () -> list.addTask(new ToDo("overflow task")),
                 "Adding more than 100 tasks should throw AgentSmithException"
         );
 
