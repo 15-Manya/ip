@@ -1,15 +1,17 @@
 package agentsmith;
 
 import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.io.FileWriter;
-import java.util.Scanner;
 import java.util.ArrayList;
+import java.util.Scanner;
 
+/**
+ * Handles loading and saving of tasks to a file.
+ */
 public class Storage {
-    final String FILE_PATH = "./data/tasks.txt";
-    final String FOLDER_PATH = "./data";
 
     private final String filePath;
 
@@ -20,64 +22,69 @@ public class Storage {
     /**
      * Loads tasks from the save file and returns them as a list.
      *
-     * @return list of tasks loaded from disk (empty if file is missing or empty)
-     * @throws AgentSmithException if there is a problem reading the file
+     * @return list of tasks loaded from disk (empty if file is missing or empty).
+     * @throws AgentSmithException if the file or folder does not exist.
      */
     public ArrayList<Task> load() throws AgentSmithException {
         ArrayList<Task> tasks = new ArrayList<>();
-        try {
-            File file = new File(FILE_PATH);
-            if (!file.exists()) {
-                throw new AgentSmithException("The task list file does not exist.");
-            }
-            if (!new File(FOLDER_PATH).exists()) {
-                throw new AgentSmithException("The data folder does not exist.");
-            }
-            if (file.length() <= 0) {
-                System.out.println("The task list is empty.");
-                return tasks;
-            }
-            if (file.exists()) {
-                Scanner sc = new Scanner(file);
-                while (sc.hasNextLine()) {
-                    String line = sc.nextLine();
-                    Task task = lineToTask(line);
+        File file = new File(filePath);
+        File folder = file.getParentFile();
+
+        if (folder != null && !folder.exists()) {
+            throw new AgentSmithException("The data folder does not exist.");
+        }
+        if (!file.exists()) {
+            throw new AgentSmithException("The task list file does not exist.");
+        }
+        if (file.length() <= 0) {
+            System.out.println("The task list is empty.");
+            return tasks;
+        }
+
+        try (Scanner sc = new Scanner(file)) {
+            while (sc.hasNextLine()) {
+                String line = sc.nextLine();
+                Task task = lineToTask(line);
+                if (task != null) {
                     tasks.add(task);
                 }
             }
-            return tasks;
-        } catch (Exception e) {
+        } catch (IOException e) {
             System.out.println("Error loading data.");
         }
         return tasks;
     }
 
-    public void load_data(TaskList tasklist) {
-        try {
-            File file = new File(FILE_PATH);
-            if (!file.exists()) {
-                throw new AgentSmithException("The task list file does not exist.");
-            }
+    /**
+     * Loads tasks from the save file into the given task list.
+     *
+     * @param taskList task list to populate.
+     */
+    public void loadData(TaskList taskList) throws AgentSmithException {
+        File file = new File(filePath);
+        File folder = file.getParentFile();
 
-            if (!new File(FOLDER_PATH).exists()) {
-                throw new AgentSmithException("The data folder does not exist.");
-            }
+        if (folder != null && !folder.exists()) {
+            throw new AgentSmithException("The data folder does not exist.");
+        }
+        if (!file.exists()) {
+            throw new AgentSmithException("The task list file does not exist.");
+        }
+        if (file.length() <= 0) {
+            System.out.println("The task list is empty.");
+            return;
+        }
 
-            if (file.length() <= 0) {
-                System.out.println("The task list is empty.");
-                return;
-            }
-
-            if (file.exists()) {
-                Scanner sc = new Scanner(file);
-                while (sc.hasNextLine()) {
-                    String line = sc.nextLine();
-                    Task task = lineToTask(line);
-                    tasklist.add_task(task);
+        try (Scanner sc = new Scanner(file)) {
+            while (sc.hasNextLine()) {
+                String line = sc.nextLine();
+                Task task = lineToTask(line);
+                if (task != null) {
+                    taskList.addTask(task);
                     System.out.println(line);
                 }
             }
-        } catch (Exception e) {
+        } catch (IOException e) {
             System.out.println("Error loading data.");
         }
     }
@@ -113,16 +120,14 @@ public class Storage {
      * Saves all tasks in the given {@link TaskList} to the save file,
      * overwriting any existing contents.
      *
-     * @param tasklist task list to persist
+     * @param taskList task list to persist.
      */
-    public void save_all(TaskList tasklist) {
-        try {
-            FileWriter fw = new FileWriter(FILE_PATH);
-            for (Task task : tasklist.getAll()) {
+    public void saveAll(TaskList taskList) {
+        try (FileWriter fw = new FileWriter(filePath)) {
+            for (Task task : taskList.getAll()) {
                 fw.write(task.saveString() + System.lineSeparator());
             }
-            fw.close();
-        } catch (Exception e) {
+        } catch (IOException e) {
             System.out.println("Error saving data: " + e.getMessage());
         }
     }

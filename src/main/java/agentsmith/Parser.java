@@ -16,22 +16,22 @@ public class Parser {
      */
     public static void parse(String input, AgentSmith agent) throws AgentSmithException {
         if (input.equals("list")) {
-            agent.display_list();
+            agent.displayList();
         } else if (input.startsWith("mark")) {
             int index = Integer.parseInt(input.substring(5).trim());
-            agent.mark_task(index);
+            agent.markTask(index);
         } else if (input.startsWith("unmark")) {
             int index = Integer.parseInt(input.substring(7).trim());
-            agent.unmark_task(index);
+            agent.unmarkTask(index);
         } else if (input.startsWith("delete")) {
             int index = Integer.parseInt(input.substring(7).trim());
-            agent.delete_task(index);
+            agent.deleteTask(index);
         } else if (input.startsWith("todo")) {
-            agent.handle_todo(input);
+            agent.handleTodo(input);
         } else if (input.startsWith("deadline")) {
-            agent.handle_deadline(input);
+            agent.handleDeadline(input);
         } else if (input.startsWith("event")) {
-            agent.handle_event(input);
+            agent.handleEvent(input);
         } else {
             throw new AgentSmithException(
                     "Hey! Ensure your input is valid. Ambiguity serves no protocol… only chaos.");

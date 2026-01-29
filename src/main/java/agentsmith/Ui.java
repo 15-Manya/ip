@@ -1,14 +1,14 @@
 package agentsmith;
 
 /**
-    * Handles all user interface output for the AgentSmith chatbot.
-    */
+ * Handles all user interface output for the AgentSmith chatbot.
+ */
 public class Ui {
 
     /**
      * Prints the ASCII art logo and greeting header.
      */
-    public void print_logo() {
+    public void printLogo() {
         String logo = "        _                    _     ____            _ _   _       \n" +
                 "       / \\   __ _  ___ _ __ | |_  / ___| _ __ ___ (_) |_| |__   \n" +
                 "      / _ \\ / _` |/ _ \\ '_ \\| __| \\___ \\| '_ ` _ \\| | __| '_ \\   \n" +
@@ -22,7 +22,7 @@ public class Ui {
     /**
      * Prints a horizontal separator line.
      */
-    public void print_line() {
+    public void printLine() {
         System.out.println("     ________________________________________________________");
     }
 
@@ -31,20 +31,20 @@ public class Ui {
      *
      * @param name the name of the chatbot
      */
-    public void print_intro(String name) {
-        print_line();
+    public void printIntro(String name) {
+        printLine();
         System.out.println("\tGreetings. You are speaking to…" + name);
         System.out.println("\tWhat can this system do…for you?");
-        print_line();
+        printLine();
         System.out.println();
     }
 
     /**
      * Prints the farewell message when the program is about to exit.
      */
-    public void print_bye() {
-        print_line();
+    public void printBye() {
+        printLine();
         System.out.println("\tUntil next time. The Matrix… never sleeps.");
-        print_line();
+        printLine();
     }
 }
