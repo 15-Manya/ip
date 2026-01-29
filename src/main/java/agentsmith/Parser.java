@@ -32,6 +32,9 @@ public class Parser {
             agent.handleDeadline(input);
         } else if (input.startsWith("event")) {
             agent.handleEvent(input);
+        } else if (input.startsWith("find")) {
+            String keyword = input.substring(4).trim();
+            agent.find(keyword);
         } else {
             throw new AgentSmithException(
                     "Hey! Ensure your input is valid. Ambiguity serves no protocol… only chaos.");
