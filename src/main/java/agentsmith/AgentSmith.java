@@ -1,5 +1,8 @@
 package agentsmith;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.PrintStream;
 import java.util.Scanner;
 import java.time.format.DateTimeFormatter;
 import java.time.LocalDateTime;
@@ -22,15 +25,27 @@ public class AgentSmith {
      * @param filePath path to the save file.
      */
     public AgentSmith(String filePath) {
+        this(filePath, true);
+    }
+
+    /**
+     * Creates an {@code AgentSmith} instance using the given save file path
+     * and an option to control whether to print the greeting on startup.
+     *
+     * @param filePath     path to the save file.
+     * @param showGreeting true if the greeting should be printed, false otherwise.
+     */
+    public AgentSmith(String filePath, boolean showGreeting) {
         this.ui = new Ui();
         this.storage = new Storage(filePath);
 
-        ui.printLogo();
-        ui.printIntro(name);
+        if (showGreeting) {
+            ui.printLogo();
+            ui.printIntro(name);
+        }
 
         try {
             this.taskList = new TaskList(storage.load());
-            ui.printLine();
         } catch (AgentSmithException e) {
             ui.printLine();
             System.out.println("\tThe task list is empty.");
@@ -68,7 +83,8 @@ public class AgentSmith {
      * @param args command-line arguments (not used).
      */
     public static void main(String[] args) {
-        new AgentSmith("data/tasks.txt").run();
+        String absolutePath = new File("data/tasks.txt").getAbsolutePath();
+        new AgentSmith(absolutePath).run();
     }
 
     /**
@@ -254,6 +270,58 @@ public class AgentSmith {
         taskList.find(keyword);
         ui.printLine();
         System.out.println();
+    }
+
+    /**
+     * Returns AgentSmith's response to a single line of user input.
+     * This method is intended for use by the JavaFX UI.
+     *
+     * @param input user input string.
+     * @return response text.
+     */
+    public String getResponse(String input) {
+        if (input == null || input.isBlank()) {
+            return "";
+        }
+        if ("bye".equals(input.trim())) {
+            return "Until next time. The Matrix… never sleeps.";
+        }
+
+        ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+        PrintStream tempOut = new PrintStream(buffer);
+        PrintStream originalOut = System.out;
+
+        try {
+            System.setOut(tempOut);
+            Parser.parse(input, this);
+        } catch (AgentSmithException e) {
+            // Match CLI error formatting: line, message, line, blank line.
+            Ui tempUi = new Ui();
+            StringBuilder sb = new StringBuilder();
+            sb.append(tempUi.getLineText()).append(System.lineSeparator())
+                    .append("\t").append(e.getMessage()).append(System.lineSeparator())
+                    .append(tempUi.getLineText()).append(System.lineSeparator())
+                    .append(System.lineSeparator());
+            return sb.toString();
+        } finally {
+            System.setOut(originalOut);
+        }
+
+        return buffer.toString();
+    }
+
+    /**
+     * Returns the raw persisted representation of all tasks,
+     * one line per task, in the same format as stored in {@code data/tasks.txt}.
+     *
+     * @return raw task lines.
+     */
+    public String getRawTaskLines() {
+        StringBuilder sb = new StringBuilder();
+        for (Task task : taskList.getAll()) {
+            sb.append(task.saveString()).append(System.lineSeparator());
+        }
+        return sb.toString().trim();
     }
 
     /**

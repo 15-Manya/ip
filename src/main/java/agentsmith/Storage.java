@@ -1,9 +1,9 @@
 package agentsmith;
 
 import java.io.File;
+import java.io.FileWriter;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.io.FileWriter;
 import java.util.Scanner;
 import java.util.ArrayList;
 
@@ -11,9 +11,6 @@ import java.util.ArrayList;
  * Handles loading and saving of tasks to a file.
  */
 public class Storage {
-    final String FILE_PATH = "./data/tasks.txt";
-    final String FOLDER_PATH = "./data";
-
     private final String filePath;
 
     public Storage(String filePath) {
@@ -29,15 +26,15 @@ public class Storage {
     public ArrayList<Task> load() throws AgentSmithException {
         ArrayList<Task> tasks = new ArrayList<>();
         try {
-            File file = new File(FILE_PATH);
+            File file = new File(filePath);
+            File folder = file.getParentFile();
             if (!file.exists()) {
                 throw new AgentSmithException("The task list file does not exist.");
             }
-            if (!new File(FOLDER_PATH).exists()) {
+            if (folder != null && !folder.exists()) {
                 throw new AgentSmithException("The data folder does not exist.");
             }
             if (file.length() <= 0) {
-                System.out.println("The task list is empty.");
                 return tasks;
             }
             if (file.exists()) {
@@ -46,8 +43,8 @@ public class Storage {
                     String line = sc.nextLine();
                     Task task = lineToTask(line);
                     tasks.add(task);
-                    System.out.println(line);
                 }
+                sc.close();
             }
             return tasks;
         } catch (Exception e) {
@@ -58,29 +55,28 @@ public class Storage {
 
     public void loadData(TaskList tasklist) {
         try {
-            File file = new File(FILE_PATH);
+            File file = new File(filePath);
+            File folder = file.getParentFile();
             if (!file.exists()) {
                 throw new AgentSmithException("The task list file does not exist.");
             }
 
-            if (!new File(FOLDER_PATH).exists()) {
+            if (folder != null && !folder.exists()) {
                 throw new AgentSmithException("The data folder does not exist.");
             }
 
             if (file.length() <= 0) {
-                System.out.println("The task list is empty.");
                 return;
             }
 
             if (file.exists()) {
-                System.out.println("Loading data...");
                 Scanner sc = new Scanner(file);
                 while (sc.hasNextLine()) {
                     String line = sc.nextLine();
                     Task task = lineToTask(line);
                     tasklist.addTask(task);
-                    System.out.println(line);
                 }
+                sc.close();
             }
         } catch (Exception e) {
             System.out.println("Error loading data.");
@@ -96,17 +92,26 @@ public class Storage {
     public Task lineToTask(String line) {
         try {
             String[] parts = line.split("\\s*\\|\\s*");
-            if (parts[0].equals("T")) {
-                return new ToDo(parts[2]);
-            } else if (parts[0].equals("D")) {
+            String type = parts[0];
+            boolean isDone = parts.length > 1 && parts[1].trim().equals("1");
+
+            if (type.equals("T")) {
+                ToDo todo = new ToDo(parts[2]);
+                todo.setIsDone(isDone);
+                return todo;
+            } else if (type.equals("D")) {
                 DateTimeFormatter format = DateTimeFormatter.ofPattern("d MMMM yyyy, h:mma");
                 LocalDateTime deadline = LocalDateTime.parse(parts[3], format);
-                return new Deadline(parts[2], deadline);
-            } else if (parts[0].equals("E")) {
+                Deadline d = new Deadline(parts[2], deadline);
+                d.setIsDone(isDone);
+                return d;
+            } else if (type.equals("E")) {
                 String[] fromTo = parts[3].split("-");
-                return new Event(parts[2], fromTo[0], fromTo[1]);
+                Event e = new Event(parts[2], fromTo[0], fromTo[1]);
+                e.setIsDone(isDone);
+                return e;
             } else {
-                throw new AgentSmithException("Invalid task type: " + parts[0]);
+                throw new AgentSmithException("Invalid task type: " + type);
             }
         } catch (AgentSmithException e) {
             System.out.println(e.getMessage());
@@ -122,7 +127,7 @@ public class Storage {
      */
     public void saveAll(TaskList tasklist) {
         try {
-            FileWriter fw = new FileWriter(FILE_PATH);
+            FileWriter fw = new FileWriter(filePath);
             for (Task task : tasklist.getAll()) {
                 fw.write(task.saveString() + System.lineSeparator());
             }
@@ -130,5 +135,7 @@ public class Storage {
         } catch (Exception e) {
             System.out.println("Error saving data: " + e.getMessage());
         }
-    }
-}
+    }}
+
+    
+    
