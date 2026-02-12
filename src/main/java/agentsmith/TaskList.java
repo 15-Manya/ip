@@ -21,6 +21,7 @@ public class TaskList {
      * @param tasks underlying list of tasks.
      */
     public TaskList(ArrayList<Task> tasks) {
+        assert tasks != null : "Tasks list should not be null";
         this.tasks = tasks;
     }
 
@@ -68,11 +69,15 @@ public class TaskList {
      * @throws AgentSmithException if the list is already at capacity.
      */
     public void addTask(Task task) throws AgentSmithException {
+        assert task != null : "Task to add should not be null";
+
         if (tasks.size() >= 100) {
             throw new AgentSmithException(
                     "The task list is at capacity.The system rejects further anomalies… prune or perish.");
         }
         tasks.add(task);
+
+        assert tasks.contains(task) : "Task should be in the list after adding";
     }
 
     /**
@@ -86,6 +91,8 @@ public class TaskList {
             throw new AgentSmithException("Invalid task number");
         }
         tasks.get(index - 1).setIsDone(true);
+
+        assert tasks.get(index - 1).isDone() : "Task should be marked as done";
     }
 
     /**
@@ -99,6 +106,8 @@ public class TaskList {
             throw new AgentSmithException("Invalid task number");
         }
         tasks.get(index - 1).setIsDone(false);
+
+        assert !tasks.get(index - 1).isDone() : "Task should be marked as not done";
     }
 
     /**
@@ -111,7 +120,10 @@ public class TaskList {
         if (index < 1 || index > tasks.size()) {
             throw new AgentSmithException("Invalid task number");
         }
+        int sizeBefore = tasks.size();
         tasks.remove(index - 1);
+
+        assert tasks.size() == sizeBefore - 1 : "Task list size should decrease by 1";
     }
 
     public void find(String keyword) throws AgentSmithException {

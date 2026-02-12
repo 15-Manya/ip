@@ -14,6 +14,8 @@ public class Storage {
     private final String filePath;
 
     public Storage(String filePath) {
+        assert filePath != null : "File path should not be null";
+        assert !filePath.isEmpty() : "File path should not be empty";
         this.filePath = filePath;
     }
 
@@ -90,8 +92,12 @@ public class Storage {
      * @return reconstructed task, or {@code null} if the line is invalid
      */
     public Task lineToTask(String line) {
+        assert line != null : "Line to parse should not be null";
+        assert !line.isEmpty() : "Line to parse should not be empty";
+
         try {
             String[] parts = line.split("\\s*\\|\\s*");
+            assert parts.length >= 3 : "Line should have at least 3 parts (type, done, description)";
             String type = parts[0];
             boolean isDone = parts.length > 1 && parts[1].trim().equals("1");
 
@@ -126,6 +132,8 @@ public class Storage {
      * @param tasklist task list to persist
      */
     public void saveAll(TaskList tasklist) {
+        assert tasklist != null : "TaskList to save should not be null";
+
         try {
             FileWriter fw = new FileWriter(filePath);
             for (Task task : tasklist.getAll()) {
@@ -135,7 +143,8 @@ public class Storage {
         } catch (Exception e) {
             System.out.println("Error saving data: " + e.getMessage());
         }
-    }}
+    }
+}
 
     
     

@@ -36,6 +36,9 @@ public class AgentSmith {
      * @param showGreeting true if the greeting should be printed, false otherwise.
      */
     public AgentSmith(String filePath, boolean showGreeting) {
+        assert filePath != null : "File path should not be null";
+        assert !filePath.isEmpty() : "File path should not be empty";
+
         this.ui = new Ui();
         this.storage = new Storage(filePath);
 
@@ -52,6 +55,10 @@ public class AgentSmith {
             ui.printLine();
             this.taskList = new TaskList();
         }
+
+        assert this.ui != null : "UI should be initialized";
+        assert this.storage != null : "Storage should be initialized";
+        assert this.taskList != null : "TaskList should be initialized";
     }
 
     /**
@@ -222,8 +229,14 @@ public class AgentSmith {
      * @throws AgentSmithException if the list is at capacity.
      */
     public void addTask(Task task) throws AgentSmithException {
+        assert task != null : "Task to add should not be null";
+
+        int sizeBefore = taskList.size();
         taskList.addTask(task);
         storage.saveAll(taskList);
+
+        assert taskList.size() == sizeBefore + 1 : "Task list size should increase by 1";
+
         ui.printLine();
         System.out.println("\tAcknowledged. The task has been integrated into the system…");
         System.out.println("\t  " + task.toString());
