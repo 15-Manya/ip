@@ -13,11 +13,20 @@ import java.time.format.DateTimeParseException;
  */
 public class AgentSmith {
 
-    public static String name = "Agent Smith";
+    /** Name of the chatbot. */
+    public static final String NAME = "Agent Smith";
 
-    TaskList taskList;
-    Ui ui;
-    Storage storage;
+    /** Error message for empty or invalid input. */
+    private static final String ERROR_INVALID_INPUT =
+            "Hey! Ensure your input is valid. Ambiguity serves no protocol… only chaos.";
+
+    /** Error message for empty description. */
+    private static final String ERROR_EMPTY_DESCRIPTION =
+            "Ensure the description for your todo… is not empty. A void serves no purpose in the system.";
+
+    private TaskList taskList;
+    private Ui ui;
+    private Storage storage;
 
     /**
      * Creates an {@code AgentSmith} instance using the given save file path.
@@ -44,7 +53,7 @@ public class AgentSmith {
 
         if (showGreeting) {
             ui.printLogo();
-            ui.printIntro(name);
+            ui.printIntro(NAME);
         }
 
         try {
@@ -95,21 +104,62 @@ public class AgentSmith {
     }
 
     /**
+     * Extracts the arguments portion from a command input by removing the command word.
+     *
+     * @param input       full user input string.
+     * @param commandWord the command word to strip.
+     * @return the arguments after the command word, trimmed.
+     * @throws AgentSmithException if there are no arguments.
+     */
+    private String extractArguments(String input, String commandWord) throws AgentSmithException {
+        if (input.length() <= commandWord.length()) {
+            throw new AgentSmithException(ERROR_INVALID_INPUT);
+        }
+        String arguments = input.substring(commandWord.length()).trim();
+        if (arguments.isEmpty()) {
+            throw new AgentSmithException(ERROR_INVALID_INPUT);
+        }
+        return arguments;
+    }
+
+    /**
+     * Validates that a description is not empty.
+     *
+     * @param description the description to validate.
+     * @throws AgentSmithException if the description is empty.
+     */
+    private void validateDescription(String description) throws AgentSmithException {
+        if (description.isEmpty()) {
+            throw new AgentSmithException(ERROR_EMPTY_DESCRIPTION);
+        }
+    }
+
+    /**
+     * Parses a date-time string in the format "yyyy-MM-dd HHmm".
+     *
+     * @param dateTimeString the string to parse.
+     * @return the parsed LocalDateTime.
+     * @throws AgentSmithException if the format is invalid.
+     */
+    private LocalDateTime parseDateTime(String dateTimeString) throws AgentSmithException {
+        try {
+            DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-dd HHmm");
+            return LocalDateTime.parse(dateTimeString, format);
+        } catch (DateTimeParseException e) {
+            throw new AgentSmithException(
+                    "Invalid deadline format. Please use: yyyy-MM-dd HHmm (e.g. 2026-01-30 1630).");
+        }
+    }
+
+    /**
      * Handles the creation of a todo task from the given input.
      *
      * @param input raw user command string.
      * @throws AgentSmithException if the description is missing or empty.
      */
     public void handleTodo(String input) throws AgentSmithException {
-        if (input.length() <= 4) {
-            throw new AgentSmithException(
-                    "Ensure the description for your todo… is not empty. A void serves no purpose in the system.");
-        }
-        String description = input.substring(5).trim();
-        if (description.isEmpty()) {
-            throw new AgentSmithException(
-                    "Ensure the description for your todo… is not empty. A void serves no purpose in the system.");
-        }
+        String description = extractArguments(input, "todo");
+        validateDescription(description);
         Task newTask = new ToDo(description);
         this.addTask(newTask);
     }
@@ -121,44 +171,52 @@ public class AgentSmith {
      * @throws AgentSmithException if the description or deadline is invalid.
      */
     public void handleDeadline(String input) throws AgentSmithException {
-        if (input.length() <= 8) {
-            throw new AgentSmithException(
-                    "Hey! Ensure your input is valid. Ambiguity serves no protocol… only chaos.");
+        String arguments = extractArguments(input, "deadline");
+        String[] parts = splitByDelimiter(arguments, "/by",
+                "There must be a deadline. Eternity is not an option within this construct.");
+
+        String description = parts[0];
+        String deadlineString = parts[1];
+
+        validateDescription(description);
+        validateNotEmpty(deadlineString,
+                "The deadline… cannot remain empty. Time in the Matrix waits for no anomaly.");
+
+        LocalDateTime deadlineDateTime = parseDateTime(deadlineString);
+        Task newTask = new Deadline(description, deadlineDateTime);
+        this.addTask(newTask);
+    }
+
+    /**
+     * Splits arguments by a delimiter and returns the two parts.
+     *
+     * @param arguments    the arguments string to split.
+     * @param delimiter    the delimiter to split by.
+     * @param errorMessage error message if delimiter is not found.
+     * @return array with [beforeDelimiter, afterDelimiter], both trimmed.
+     * @throws AgentSmithException if delimiter is not found.
+     */
+    private String[] splitByDelimiter(String arguments, String delimiter, String errorMessage)
+            throws AgentSmithException {
+        int index = arguments.indexOf(delimiter);
+        if (index == -1) {
+            throw new AgentSmithException(errorMessage);
         }
+        String before = arguments.substring(0, index).trim();
+        String after = arguments.substring(index + delimiter.length()).trim();
+        return new String[]{before, after};
+    }
 
-        input = input.substring(8).trim();
-        if (input.isEmpty()) {
-            throw new AgentSmithException(
-                    "Hey! Ensure your input is valid. Ambiguity serves no protocol… only chaos.");
-        }
-
-        int byIndex = input.indexOf("/by");
-        if (byIndex == -1) {
-            throw new AgentSmithException(
-                    "There must be a deadline. Eternity is not an option within this construct.");
-        }
-
-        String description = input.substring(0, byIndex).trim();
-        if (description.isEmpty()) {
-            throw new AgentSmithException(
-                    "Ensure the description for your deadline… is not empty. A void serves no purpose in the system.");
-        }
-
-        String deadline = input.substring(byIndex + 3).trim();
-        if (deadline.isEmpty()) {
-            throw new AgentSmithException(
-                    "The deadline… cannot remain empty. Time in the Matrix waits for no anomaly.");
-        }
-
-        try {
-            DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-dd HHmm");
-            LocalDateTime deadlineDateTime = LocalDateTime.parse(deadline, format);
-
-            Task newTask = new Deadline(description, deadlineDateTime);
-            this.addTask(newTask);
-        } catch (DateTimeParseException e) {
-            throw new AgentSmithException(
-                    "Invalid deadline format. Please use: yyyy-MM-dd HHmm (e.g. 2026-01-30 1630).");
+    /**
+     * Validates that a string is not empty.
+     *
+     * @param value        the string to validate.
+     * @param errorMessage the error message if empty.
+     * @throws AgentSmithException if the string is empty.
+     */
+    private void validateNotEmpty(String value, String errorMessage) throws AgentSmithException {
+        if (value.isEmpty()) {
+            throw new AgentSmithException(errorMessage);
         }
     }
 
@@ -169,36 +227,23 @@ public class AgentSmith {
      * @throws AgentSmithException if the description or time range is invalid.
      */
     public void handleEvent(String input) throws AgentSmithException {
-        if (input.length() <= 5) {
-            throw new AgentSmithException(
-                    "Hey! Ensure your input is valid. Ambiguity serves no protocol… only chaos.");
-        }
+        String arguments = extractArguments(input, "event");
 
-        input = input.substring(6).trim();
-        if (input.isEmpty()) {
-            throw new AgentSmithException(
-                    "Hey! Ensure your input is valid. Ambiguity serves no protocol… only chaos.");
-        }
+        String[] descAndTimes = splitByDelimiter(arguments, "/from",
+                "A start time and end time are required. The protocol demands boundaries… chaos does not.");
+        String description = descAndTimes[0];
+        String timesString = descAndTimes[1];
 
-        int fromIndex = input.indexOf("/from");
-        int toIndex = input.indexOf("/to");
-        if (fromIndex == -1 || toIndex == -1) {
-            throw new AgentSmithException(
-                    "A start time and end time are required. The protocol demands boundaries… chaos does not.");
-        }
+        String[] times = splitByDelimiter(timesString, "/to",
+                "A start time and end time are required. The protocol demands boundaries… chaos does not.");
+        String from = times[0];
+        String to = times[1];
 
-        String description = input.substring(0, fromIndex).trim();
-        if (description.isEmpty()) {
-            throw new AgentSmithException(
-                    "Ensure the description for your deadline… is not empty. A void serves no purpose in the system.");
-        }
-
-        String from = input.substring(fromIndex + 6, toIndex).trim();
-        String to = input.substring(toIndex + 3).trim();
-        if (from.isEmpty() || to.isEmpty()) {
-            throw new AgentSmithException(
-                    "The start time and end time cannot remain empty. Time in the Matrix waits for no anomaly.");
-        }
+        validateDescription(description);
+        validateNotEmpty(from,
+                "The start time and end time cannot remain empty. Time in the Matrix waits for no anomaly.");
+        validateNotEmpty(to,
+                "The start time and end time cannot remain empty. Time in the Matrix waits for no anomaly.");
 
         Task newTask = new Event(description, from, to);
         this.addTask(newTask);
@@ -278,6 +323,12 @@ public class AgentSmith {
         System.out.println();
     }
 
+    /**
+     * Finds and displays all tasks that contain the given keyword.
+     *
+     * @param keyword the keyword to search for in task descriptions.
+     * @throws AgentSmithException if the keyword is empty.
+     */
     public void find(String keyword) throws AgentSmithException {
         ui.printLine();
         taskList.find(keyword);

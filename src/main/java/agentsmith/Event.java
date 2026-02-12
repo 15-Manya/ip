@@ -1,8 +1,11 @@
 package agentsmith;
 
+/**
+ * Represents a task that spans a time range.
+ */
 public class Event extends Task {
-    protected String from, to;
-    protected boolean isDone;
+    private String from;
+    private String to;
 
     public Event(String description, String from, String to) {
         super(description);
