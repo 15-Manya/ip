@@ -42,4 +42,3 @@ public class DialogBox extends HBox {
         return new DialogBox(text);
     }
 }
-

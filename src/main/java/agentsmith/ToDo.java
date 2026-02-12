@@ -1,5 +1,8 @@
 package agentsmith;
 
+/**
+ * Represents a simple task without any date or time attached.
+ */
 public class ToDo extends Task {
 
     public ToDo(String description) {

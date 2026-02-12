@@ -6,6 +6,9 @@ import java.util.ArrayList;
  * Used to manage the list of tasks and provide operations on it.
  */
 public class TaskList {
+    /** Maximum number of tasks allowed in the list. */
+    private static final int MAX_CAPACITY = 100;
+
     private ArrayList<Task> tasks;
 
     /**
@@ -71,7 +74,7 @@ public class TaskList {
     public void addTask(Task task) throws AgentSmithException {
         assert task != null : "Task to add should not be null";
 
-        if (tasks.size() >= 100) {
+        if (tasks.size() >= MAX_CAPACITY) {
             throw new AgentSmithException(
                     "The task list is at capacity.The system rejects further anomalies… prune or perish.");
         }
@@ -126,6 +129,12 @@ public class TaskList {
         assert tasks.size() == sizeBefore - 1 : "Task list size should decrease by 1";
     }
 
+    /**
+     * Searches for and displays all tasks containing the given keyword.
+     *
+     * @param keyword the keyword to search for.
+     * @throws AgentSmithException if the keyword is empty.
+     */
     public void find(String keyword) throws AgentSmithException {
         if (keyword.isEmpty()) {
             throw new AgentSmithException("The keyword is empty.");

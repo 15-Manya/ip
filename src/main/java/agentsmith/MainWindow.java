@@ -45,7 +45,7 @@ public class MainWindow {
         this.agentSmith = agentSmith;
 
         Ui ui = new Ui();
-        String intro = ui.getLogoText() + System.lineSeparator() + ui.getIntroText(AgentSmith.name);
+        String intro = ui.getLogoText() + System.lineSeparator() + ui.getIntroText(AgentSmith.NAME);
         dialogContainer.getChildren().add(DialogBox.getAgentDialog(intro));
 
         // Show the raw saved task lines exactly as in data/tasks.txt

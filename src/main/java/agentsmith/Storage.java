@@ -11,6 +11,10 @@ import java.util.ArrayList;
  * Handles loading and saving of tasks to a file.
  */
 public class Storage {
+    private static final String TODO_TYPE = "T";
+    private static final String DEADLINE_TYPE = "D";
+    private static final String EVENT_TYPE = "E";
+
     private final String filePath;
 
     public Storage(String filePath) {
@@ -39,50 +43,19 @@ public class Storage {
             if (file.length() <= 0) {
                 return tasks;
             }
-            if (file.exists()) {
-                Scanner sc = new Scanner(file);
-                while (sc.hasNextLine()) {
-                    String line = sc.nextLine();
-                    Task task = lineToTask(line);
-                    tasks.add(task);
-                }
-                sc.close();
+
+            Scanner sc = new Scanner(file);
+            while (sc.hasNextLine()) {
+                String line = sc.nextLine();
+                Task task = lineToTask(line);
+                tasks.add(task);
             }
+            sc.close();
             return tasks;
         } catch (Exception e) {
             System.out.println("Error loading data.");
         }
         return tasks;
-    }
-
-    public void loadData(TaskList tasklist) {
-        try {
-            File file = new File(filePath);
-            File folder = file.getParentFile();
-            if (!file.exists()) {
-                throw new AgentSmithException("The task list file does not exist.");
-            }
-
-            if (folder != null && !folder.exists()) {
-                throw new AgentSmithException("The data folder does not exist.");
-            }
-
-            if (file.length() <= 0) {
-                return;
-            }
-
-            if (file.exists()) {
-                Scanner sc = new Scanner(file);
-                while (sc.hasNextLine()) {
-                    String line = sc.nextLine();
-                    Task task = lineToTask(line);
-                    tasklist.addTask(task);
-                }
-                sc.close();
-            }
-        } catch (Exception e) {
-            System.out.println("Error loading data.");
-        }
     }
 
     /**
@@ -101,17 +74,17 @@ public class Storage {
             String type = parts[0];
             boolean isDone = parts.length > 1 && parts[1].trim().equals("1");
 
-            if (type.equals("T")) {
+            if (type.equals(TODO_TYPE)) {
                 ToDo todo = new ToDo(parts[2]);
                 todo.setIsDone(isDone);
                 return todo;
-            } else if (type.equals("D")) {
+            } else if (type.equals(DEADLINE_TYPE)) {
                 DateTimeFormatter format = DateTimeFormatter.ofPattern("d MMMM yyyy, h:mma");
                 LocalDateTime deadline = LocalDateTime.parse(parts[3], format);
                 Deadline d = new Deadline(parts[2], deadline);
                 d.setIsDone(isDone);
                 return d;
-            } else if (type.equals("E")) {
+            } else if (type.equals(EVENT_TYPE)) {
                 String[] fromTo = parts[3].split("-");
                 Event e = new Event(parts[2], fromTo[0], fromTo[1]);
                 e.setIsDone(isDone);
@@ -145,6 +118,3 @@ public class Storage {
         }
     }
 }
-
-    
-    
