@@ -5,3 +5,4 @@ T | 1 | checking
 T | 1 | CS2103T tutorial
 D | 0 | Finish Week 4 work | 5 February 2026, 11:59PM
 T | 0 | check
+F | 0 | 2103T assignment | 4 hours

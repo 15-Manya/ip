@@ -14,6 +14,7 @@ public class Storage {
     private static final String TODO_TYPE = "T";
     private static final String DEADLINE_TYPE = "D";
     private static final String EVENT_TYPE = "E";
+    private static final String FIXED_DURATION_TYPE = "F";
 
     private final String filePath;
 
@@ -89,6 +90,10 @@ public class Storage {
                 Event e = new Event(parts[2], fromTo[0], fromTo[1]);
                 e.setIsDone(isDone);
                 return e;
+            } else if (type.equals(FIXED_DURATION_TYPE)) {
+                FixedDurationTask f = new FixedDurationTask(parts[2], parts[3]);
+                f.setIsDone(isDone);
+                return f;
             } else {
                 throw new AgentSmithException("Invalid task type: " + type);
             }

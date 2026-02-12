@@ -22,6 +22,7 @@ public class Parser {
     private static final String COMMAND_DEADLINE = "deadline";
     private static final String COMMAND_EVENT = "event";
     private static final String COMMAND_FIND = "find";
+    private static final String COMMAND_FIXED = "fixed";
 
     public static void parse(String input, AgentSmith agent) throws AgentSmithException {
         if (input.equals(COMMAND_LIST)) {
@@ -44,6 +45,8 @@ public class Parser {
         } else if (input.startsWith(COMMAND_FIND)) {
             String keyword = input.substring(COMMAND_FIND.length()).trim();
             agent.find(keyword);
+        } else if (input.startsWith(COMMAND_FIXED)) {
+            agent.handleFixedDuration(input);
         } else {
             throw new AgentSmithException(
                     "Hey! Ensure your input is valid. Ambiguity serves no protocol… only chaos.");

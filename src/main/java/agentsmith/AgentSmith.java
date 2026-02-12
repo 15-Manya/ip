@@ -250,6 +250,29 @@ public class AgentSmith {
     }
 
     /**
+     * Handles the creation of a fixed duration task from the given input.
+     * Format: fixed DESCRIPTION /needs DURATION
+     *
+     * @param input raw user command string.
+     * @throws AgentSmithException if the description or duration is invalid.
+     */
+    public void handleFixedDuration(String input) throws AgentSmithException {
+        String arguments = extractArguments(input, "fixed");
+        String[] parts = splitByDelimiter(arguments, "/needs",
+                "A duration is required. Use: fixed DESCRIPTION /needs DURATION");
+
+        String description = parts[0];
+        String duration = parts[1];
+
+        validateDescription(description);
+        validateNotEmpty(duration,
+                "The duration cannot be empty. Specify how long the task needs.");
+
+        Task newTask = new FixedDurationTask(description, duration);
+        this.addTask(newTask);
+    }
+
+    /**
      * Displays all tasks in the current task list.
      */
     public void displayList() {
