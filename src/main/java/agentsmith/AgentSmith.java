@@ -273,6 +273,27 @@ public class AgentSmith {
     }
 
     /**
+     * Displays the help message with available commands.
+     */
+    public void showHelp() {
+        ui.printLine();
+        System.out.println("\tAvailable commands:");
+        System.out.println("\t  list                           - Show all tasks");
+        System.out.println("\t  todo DESCRIPTION               - Add a todo task");
+        System.out.println("\t  deadline DESC /by DATE         - Add a deadline (DATE: yyyy-MM-dd HHmm)");
+        System.out.println("\t  event DESC /from START /to END - Add an event");
+        System.out.println("\t  fixed DESC /needs DURATION     - Add a fixed duration task");
+        System.out.println("\t  mark NUMBER                    - Mark task as done");
+        System.out.println("\t  unmark NUMBER                  - Mark task as not done");
+        System.out.println("\t  delete NUMBER                  - Delete a task");
+        System.out.println("\t  find KEYWORD                   - Find tasks containing keyword");
+        System.out.println("\t  help                           - Show this help message");
+        System.out.println("\t  bye                            - Exit the program");
+        ui.printLine();
+        System.out.println();
+    }
+
+    /**
      * Displays all tasks in the current task list.
      */
     public void displayList() {

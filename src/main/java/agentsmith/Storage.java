@@ -35,12 +35,18 @@ public class Storage {
         try {
             File file = new File(filePath);
             File folder = file.getParentFile();
-            if (!file.exists()) {
-                throw new AgentSmithException("The task list file does not exist.");
-            }
+
+            // Create folder if it doesn't exist
             if (folder != null && !folder.exists()) {
-                throw new AgentSmithException("The data folder does not exist.");
+                folder.mkdirs();
             }
+
+            // Create file if it doesn't exist
+            if (!file.exists()) {
+                file.createNewFile();
+                return tasks;
+            }
+
             if (file.length() <= 0) {
                 return tasks;
             }
@@ -49,12 +55,14 @@ public class Storage {
             while (sc.hasNextLine()) {
                 String line = sc.nextLine();
                 Task task = lineToTask(line);
-                tasks.add(task);
+                if (task != null) {
+                    tasks.add(task);
+                }
             }
             sc.close();
             return tasks;
         } catch (Exception e) {
-            System.out.println("Error loading data.");
+            System.out.println("Error loading data: " + e.getMessage());
         }
         return tasks;
     }

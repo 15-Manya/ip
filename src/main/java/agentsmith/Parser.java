@@ -23,9 +23,12 @@ public class Parser {
     private static final String COMMAND_EVENT = "event";
     private static final String COMMAND_FIND = "find";
     private static final String COMMAND_FIXED = "fixed";
+    private static final String COMMAND_HELP = "help";
 
     public static void parse(String input, AgentSmith agent) throws AgentSmithException {
-        if (input.equals(COMMAND_LIST)) {
+        if (input.equals(COMMAND_HELP)) {
+            agent.showHelp();
+        } else if (input.equals(COMMAND_LIST)) {
             agent.displayList();
         } else if (input.startsWith(COMMAND_MARK)) {
             int index = extractIndex(input, COMMAND_MARK);
@@ -59,8 +62,19 @@ public class Parser {
      * @param input       full user input.
      * @param commandWord the command word prefix.
      * @return the parsed integer index.
+     * @throws AgentSmithException if the index is not a valid number.
      */
-    private static int extractIndex(String input, String commandWord) {
-        return Integer.parseInt(input.substring(commandWord.length()).trim());
+    private static int extractIndex(String input, String commandWord) throws AgentSmithException {
+        String indexStr = input.substring(commandWord.length()).trim();
+        if (indexStr.isEmpty()) {
+            throw new AgentSmithException(
+                    "Please provide a task number. Usage: " + commandWord + " <number>");
+        }
+        try {
+            return Integer.parseInt(indexStr);
+        } catch (NumberFormatException e) {
+            throw new AgentSmithException(
+                    "Invalid task number: '" + indexStr + "'. Please enter a valid number.");
+        }
     }
 }
