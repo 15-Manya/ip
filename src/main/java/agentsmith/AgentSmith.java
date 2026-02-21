@@ -392,7 +392,12 @@ public class AgentSmith {
             return "";
         }
         if ("bye".equals(input.trim())) {
-            return "Until next time. The Matrix… never sleeps.";
+            Ui tempUi = new Ui();
+            StringBuilder sb = new StringBuilder();
+            sb.append(tempUi.getLineText()).append(System.lineSeparator())
+                    .append("\tUntil next time. The Matrix… never sleeps.").append(System.lineSeparator())
+                    .append(tempUi.getLineText()).append(System.lineSeparator());
+            return sb.toString();
         }
 
         ByteArrayOutputStream buffer = new ByteArrayOutputStream();
