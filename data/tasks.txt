@@ -1,8 +1,9 @@
 E | 0 | team meeting | 4-6pm
 T | 0 | borrow book
-D | 0 | return book | 30 January 2024, 4:00PM
+D | 1 | return book | 30 January 2024, 4:00PM
 T | 1 | checking
 T | 1 | CS2103T tutorial
 D | 0 | Finish Week 4 work | 5 February 2026, 11:59PM
 T | 0 | check
 F | 1 | 2103T assignment | 4 hours
+T | 0 | check

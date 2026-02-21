@@ -1,9 +1,13 @@
 package agentsmith;
 
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 
 /**
@@ -25,6 +29,9 @@ public class MainWindow {
 
     private AgentSmith agentSmith;
 
+    private Image userImage;
+    private Image agentImage;
+
     /**
      * Initializes the main window.
      * This method is called automatically after the FXML is loaded.
@@ -34,6 +41,10 @@ public class MainWindow {
         scrollPane.vvalueProperty().bind(dialogContainer.heightProperty());
         sendButton.setDefaultButton(true);
         userInput.setOnAction(event -> handleUserInput());
+
+        // Load default images (will be replaced when user provides custom ones)
+        userImage = new Image(getClass().getResourceAsStream("/images/user.png"));
+        agentImage = new Image(getClass().getResourceAsStream("/images/agent.png"));
     }
 
     /**
@@ -44,14 +55,23 @@ public class MainWindow {
     public void setAgentSmith(AgentSmith agentSmith) {
         this.agentSmith = agentSmith;
 
+        // Show logo at top (centered)
         Ui ui = new Ui();
-        String intro = ui.getLogoText() + System.lineSeparator() + ui.getIntroText(AgentSmith.NAME);
-        dialogContainer.getChildren().add(DialogBox.getAgentDialog(intro));
+        HBox logoBox = DialogBox.getLogoBox(ui.getLogoText());
+        logoBox.prefWidthProperty().bind(dialogContainer.widthProperty().subtract(20));
+        dialogContainer.getChildren().add(logoBox);
 
-        // Show the raw saved task lines exactly as in data/tasks.txt
+        // Show welcome message
+        String welcome = "Greetings. You are speaking to… " + AgentSmith.NAME + "\n"
+                + "What can this system do… for you?\n\n"
+                + "Type 'help' for available commands.";
+        addDialog(DialogBox.getAgentDialog(welcome, agentImage));
+
+        // Show existing tasks if any
         String rawLines = agentSmith.getRawTaskLines();
         if (!rawLines.isBlank()) {
-            dialogContainer.getChildren().add(DialogBox.getAgentDialog(rawLines));
+            String taskMessage = "Your existing tasks:\n" + rawLines;
+            addDialog(DialogBox.getAgentDialog(taskMessage, agentImage));
         }
     }
 
@@ -67,11 +87,25 @@ public class MainWindow {
         }
 
         String response = agentSmith.getResponse(input);
+        // Remove the divider lines for cleaner GUI display
+        String cleanResponse = response
+                .replaceAll("\\s*_{5,}\\s*", "")
+                .replaceAll("\\t", "")
+                .trim();
 
-        dialogContainer.getChildren().add(DialogBox.getUserDialog(input));
-        dialogContainer.getChildren().add(DialogBox.getAgentDialog(response));
+        addDialog(DialogBox.getUserDialog(input, userImage));
+        if (!cleanResponse.isEmpty()) {
+            addDialog(DialogBox.getAgentDialog(cleanResponse, agentImage));
+        }
 
         userInput.clear();
     }
-}
 
+    /**
+     * Adds a dialog node to the container with proper width binding.
+     */
+    private void addDialog(HBox dialog) {
+        dialog.prefWidthProperty().bind(dialogContainer.widthProperty().subtract(20));
+        dialogContainer.getChildren().add(dialog);
+    }
+}

@@ -19,7 +19,16 @@ public class Ui {
                 + "     / ___ \\ (_| |  __/ | | | |_   ___) | | | | | | | |_| | | |  \n"
                 + "    /_/   \\_\\__, |\\___|_| |_|\\__| |____/|_| |_| |_|_|\\__|_| |_|  \n"
                 + "             |___/                                                \n";
-        return "\tHello from\n" + logo;
+        return logo;
+    }
+
+    /**
+     * Returns just the "Hello from" greeting text.
+     *
+     * @return hello text.
+     */
+    public String getHelloText() {
+        return "Hello from";
     }
 
     /**

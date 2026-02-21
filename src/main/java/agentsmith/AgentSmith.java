@@ -17,12 +17,10 @@ public class AgentSmith {
     public static final String NAME = "Agent Smith";
 
     /** Error message for empty or invalid input. */
-    private static final String ERROR_INVALID_INPUT =
-            "Hey! Ensure your input is valid. Ambiguity serves no protocol… only chaos.";
+    private static final String ERROR_INVALID_INPUT = "Hey! Ensure your input is valid. Ambiguity serves no protocol… only chaos.";
 
     /** Error message for empty description. */
-    private static final String ERROR_EMPTY_DESCRIPTION =
-            "Ensure the description for your todo… is not empty. A void serves no purpose in the system.";
+    private static final String ERROR_EMPTY_DESCRIPTION = "Ensure the description for your todo… is not empty. A void serves no purpose in the system.";
 
     private TaskList taskList;
     private Ui ui;
@@ -104,7 +102,8 @@ public class AgentSmith {
     }
 
     /**
-     * Extracts the arguments portion from a command input by removing the command word.
+     * Extracts the arguments portion from a command input by removing the command
+     * word.
      *
      * @param input       full user input string.
      * @param commandWord the command word to strip.
@@ -204,7 +203,7 @@ public class AgentSmith {
         }
         String before = arguments.substring(0, index).trim();
         String after = arguments.substring(index + delimiter.length()).trim();
-        return new String[]{before, after};
+        return new String[] { before, after };
     }
 
     /**
